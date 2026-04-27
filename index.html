@@ -17,7 +17,16 @@ const SUPABASE_KEY = "sb_publishable_bJX1lFc4TyrZ73tsHL_GVw_6lr20zAQ";
 
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+let saveTimer;
 
+function autoSave() {
+  clearTimeout(saveTimer);
+
+  saveTimer = setTimeout(() => {
+    console.log("Auto saving...");
+    saveDashboard();
+  }, 1000); // wait 1 second
+}
 // ===== SAVE =====
 window.saveDashboard = async function () {
   const { error } = await db
@@ -34,39 +43,65 @@ window.saveDashboard = async function () {
     console.log("✅ Saved");
   }
 };
+window.manualSave = async function () {
+  console.log("Saving manually...");
 
+  document.getElementById("saveStatus").innerText = "Saving...";
 
-// ===== LOAD =====
-window.loadDashboard = async function () {
-  const { data, error } = await db
-    .from('dashboard')
-    .select('*')
-    .eq('id', "main")
-    .single();
+  const { error } = await db
+    .from("dashboard")
+    .upsert([{
+      id: "main",
+      data: ORGS,
+      updated_at: new Date()
+    }]);
 
   if (error) {
-    console.error("❌ LOAD ERROR:", error);
-    return null;
+    console.error("❌ Save failed:", error);
+    document.getElementById("saveStatus").innerText = "❌ Error";
+  } else {
+    console.log("✅ Saved successfully");
+    document.getElementById("saveStatus").innerText = "✅ Saved";
   }
-
-  return data?.data || null;
 };
 
+// ===== LOAD =====
+async function loadDashboard() {
+    const { data, error } = await db
+        .from('dashboard')
+        .select('*')
+        .eq('id', 'main');
+
+    if (error) {
+        console.error("❌ LOAD ERROR:", error);
+        return null;
+    }
+
+    if (!data || data.length === 0) {
+        console.warn("⚠️ No row found in DB");
+        return null;
+    }
+
+    if (data.length > 1) {
+        console.warn("⚠️ Multiple rows found, using first");
+    }
+
+    return data[0].data || null;
+}
 
 // ===== INIT (AUTO LOAD) =====
 async function initApp() {
   const saved = await loadDashboard();
 
-  if (saved && Array.isArray(saved)) {
+  if (saved && Array.isArray(saved) && saved.length > 0) {
     ORGS = saved;
-    render(); // your existing function
     console.log("✅ Data loaded into UI");
   } else {
-    console.warn("⚠️ No saved data found");
+    console.warn("⚠️ No saved data found, using default");
   }
-}
 
-window.addEventListener("load", initApp);
+  render();
+}
 
 
 // ===== TEST BUTTONS =====
@@ -79,6 +114,7 @@ window.testLoad = async function () {
   console.log("Loaded:", data);
 };
 </script>
+  <style>
 body{font-family:var(--font-sans)}
 .dash{padding:1.25rem 1rem}
 .topbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:1rem}
@@ -191,6 +227,9 @@ td.top{vertical-align:top}
 <div class="topbar">
   <div><h1>TBB: Bold Projects</h1><p>Status drives pie charts · progress is manual · click org pie to filter</p></div>
   <button class="btn-export" onclick="exportExcel()">↓ Export to Excel</button>
+   <button onclick="manualSave()" style="margin-left:10px;">
+      💾 Save All
+    </button>
 </div>
 
 <div class="summary-strip" id="summaryStrip">
@@ -894,7 +933,7 @@ let addingProj={},addingAct={};
 const uid=()=>'x'+(idC++);
 const today=new Date();
 
-const ORGS=[
+let ORGS = [
   {id:'ss',name:'S S Rathaur',initials:'SS',bg:'#E6F1FB',fg:'#185FA5',projects:[
     {id:'ss1',type:'business',text:'Hire a Business Analyst (BA)',tag:null,status:'Not started',impact:'',pct:0,deadline:'',actions:[]},
     {id:'ss2',type:'business',text:'Prepare incentive plan for sales team',tag:null,status:'Not started',impact:'Boosts sales motivation & retention',pct:20,deadline:'2026-04-25',actions:[{id:'ssa1',text:"Implement incentive system by 25th Apr '26"}]},
@@ -1189,6 +1228,5 @@ window.testLoad = async function () {
   console.log("Loaded:", data);
 };
 </script>
-  <button onclick="testSave()">Test Save</button>
-<button onclick="testLoad()">Test Load</button>
+ 
 </body></html>
