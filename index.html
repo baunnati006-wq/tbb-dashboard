@@ -35,7 +35,7 @@ window.saveDashboard = async function () {
       id: "main",
       data: ORGS,
       updated_at: new Date()
-    }]  ;{ onConflict: 'id' });
+    }], { onConflict: 'id' });
 
   if (error) {
     console.error("❌ SAVE ERROR:", error);
