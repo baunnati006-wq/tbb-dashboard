@@ -1111,7 +1111,8 @@ function confirmAddAct(pid){
   for(const o of ORGS){const p=o.projects.find(x=>x.id===pid);if(p){p.actions.push({id:uid(),text:txt});break;}}
   delete addingAct[pid];renderTable();
 }
-
+ <button onclick="testSave()">Test Save</button>
+<button onclick="testLoad()">Test Load</button>
 function exportExcel(){
   if(typeof XLSX==='undefined'){alert('Try again shortly.');return;}
   const wb=XLSX.utils.book_new();
