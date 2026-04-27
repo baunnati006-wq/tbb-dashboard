@@ -1,11 +1,9 @@
-import { getStore } from '@netlify/blobs';
+const fs = require('fs');
+const path = require('path');
 
-export async function handler(event) {
+const filePath = '/tmp/data.json';
 
-  const store = getStore({
-    name: "dashboard",
-    consistency: "strong"
-  });
+exports.handler = async function (event) {
 
   try {
 
@@ -13,7 +11,7 @@ export async function handler(event) {
     if (event.httpMethod === 'POST') {
       const data = JSON.parse(event.body || "{}");
 
-      await store.set("data", JSON.stringify(data));
+      fs.writeFileSync(filePath, JSON.stringify(data));
 
       return {
         statusCode: 200,
@@ -23,17 +21,24 @@ export async function handler(event) {
 
     // LOAD
     if (event.httpMethod === 'GET') {
-      const data = await store.get("data", { type: "text" });
+      if (!fs.existsSync(filePath)) {
+        return {
+          statusCode: 200,
+          body: "{}",
+        };
+      }
+
+      const data = fs.readFileSync(filePath, 'utf-8');
 
       return {
         statusCode: 200,
-        body: data || "{}",
+        body: data,
       };
     }
 
     return {
       statusCode: 405,
-      body: "Method Not Allowed"
+      body: "Method not allowed"
     };
 
   } catch (err) {
@@ -42,4 +47,4 @@ export async function handler(event) {
       body: JSON.stringify({ error: err.message })
     };
   }
-}
+};
