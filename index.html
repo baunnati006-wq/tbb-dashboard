@@ -7,8 +7,8 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
-const SUPABASE_URL = "PASTE_YOUR_URL";
-const SUPABASE_KEY = "PASTE_YOUR_ANON_KEY";
+const SUPABASE_URL = "https://avzedikzynemagvajyfd.supabase.co";
+const SUPABASE_KEY = "sb_publishable_bJX1lFc4TyrZ73tsHL_GVw_6lr20zAQ";
 
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
@@ -1137,5 +1137,17 @@ function exportExcel(){
 }
 
 render();
+  function testSave() {
+  saveDashboard({
+    projects: [
+      { name: "Test Project", status: "Running", progress: "50%" }
+    ]
+  });
+}
+
+async function testLoad() {
+  const data = await loadDashboard();
+  console.log("Loaded:", data);
+}
 </script>
 </body></html>
