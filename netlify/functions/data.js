@@ -1,24 +1,45 @@
 import { getStore } from '@netlify/blobs';
 
 export async function handler(event) {
-  const store = getStore('dashboard');
 
-  if (event.httpMethod === 'POST') {
-    const data = JSON.parse(event.body);
-    await store.set('data', data);
+  const store = getStore({
+    name: "dashboard",
+    consistency: "strong"
+  });
+
+  try {
+
+    // SAVE
+    if (event.httpMethod === 'POST') {
+      const data = JSON.parse(event.body || "{}");
+
+      await store.set("data", JSON.stringify(data));
+
+      return {
+        statusCode: 200,
+        body: JSON.stringify({ message: "Saved" }),
+      };
+    }
+
+    // LOAD
+    if (event.httpMethod === 'GET') {
+      const data = await store.get("data", { type: "text" });
+
+      return {
+        statusCode: 200,
+        body: data || "{}",
+      };
+    }
 
     return {
-      statusCode: 200,
-      body: JSON.stringify({ message: 'Saved' }),
+      statusCode: 405,
+      body: "Method Not Allowed"
     };
-  }
 
-  if (event.httpMethod === 'GET') {
-    const data = await store.get('data');
-
+  } catch (err) {
     return {
-      statusCode: 200,
-      body: JSON.stringify(data || {}),
+      statusCode: 500,
+      body: JSON.stringify({ error: err.message })
     };
   }
 }
