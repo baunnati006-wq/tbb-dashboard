@@ -28,6 +28,7 @@ function autoSave() {
   }, 1000); // wait 1 second
 }
 // ===== SAVE =====
+// ===== SAVE =====
 window.saveDashboard = async function () {
   const { error } = await db
     .from('dashboard')
@@ -43,26 +44,19 @@ window.saveDashboard = async function () {
     console.log("✅ Saved");
   }
 };
+
+// ===== MANUAL SAVE =====
 window.manualSave = async function () {
   console.log("Saving manually...");
 
   const statusEl = document.getElementById("saveStatus");
   if (statusEl) statusEl.innerText = "Saving...";
 
-  await saveDashboard();
+  await window.saveDashboard();
 
   if (statusEl) {
     statusEl.innerText = "✅ Saved";
     setTimeout(() => (statusEl.innerText = ""), 2000);
-  }
-};
-
-  if (error) {
-    console.error("❌ Save failed:", error);
-    document.getElementById("saveStatus").innerText = "❌ Error";
-  } else {
-    console.log("✅ Saved successfully");
-    document.getElementById("saveStatus").innerText = "✅ Saved";
   }
 };
 
