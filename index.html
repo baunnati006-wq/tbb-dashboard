@@ -35,7 +35,7 @@ window.saveDashboard = async function () {
       id: "main",
       data: ORGS,
       updated_at: new Date()
-    }]);{ onConflict: 'id' });
+    }]  ;{ onConflict: 'id' });
 
   if (error) {
     console.error("❌ SAVE ERROR:", error);
@@ -46,15 +46,16 @@ window.saveDashboard = async function () {
 window.manualSave = async function () {
   console.log("Saving manually...");
 
-  document.getElementById("saveStatus").innerText = "Saving...";
+  const statusEl = document.getElementById("saveStatus");
+  if (statusEl) statusEl.innerText = "Saving...";
 
-  const { error } = await db
-    .from("dashboard")
-    .upsert([{
-      id: "main",
-      data: ORGS,
-      updated_at: new Date()
-    }]);
+  await saveDashboard();
+
+  if (statusEl) {
+    statusEl.innerText = "✅ Saved";
+    setTimeout(() => (statusEl.innerText = ""), 2000);
+  }
+};
 
   if (error) {
     console.error("❌ Save failed:", error);
