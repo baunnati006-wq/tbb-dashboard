@@ -225,11 +225,22 @@ td.top{vertical-align:top}
 <h2 class="sr-only">TBB Bold Projects — 7 pie charts with shared legend, clean 7-column table with manual progress and deadlines</h2>
 
 <div class="topbar">
-  <div><h1>TBB: Bold Projects</h1><p>Status drives pie charts · progress is manual · click org pie to filter</p></div>
-  <button class="btn-export" onclick="exportExcel()">↓ Export to Excel</button>
-   <button onclick="manualSave()" style="margin-left:10px;">
+  <div>
+    <h1>TBB: Bold Projects</h1>
+    <p>Status drives pie charts · progress is manual · click org pie to filter</p>
+  </div>
+
+  <div style="display:flex; align-items:center; gap:10px;">
+    <button class="btn-export" onclick="exportExcel()">
+      Export to Excel
+    </button>
+
+    <button onclick="manualSave()">
       💾 Save All
     </button>
+
+    <span id="saveStatus"></span>
+  </div>
 </div>
 
 <div class="summary-strip" id="summaryStrip">
