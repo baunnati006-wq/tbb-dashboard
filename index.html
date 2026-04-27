@@ -2,6 +2,34 @@
 <!-- saved from url=(0067)file:///C:/Users/Unnati%20Unlimited/Downloads/tbb_dashboard_v6.html -->
 <html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><style>
 *{box-sizing:border-box;margin:0;padding:0}
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+const SUPABASE_URL = "PASTE_YOUR_URL";
+const SUPABASE_KEY = "PASTE_YOUR_ANON_KEY";
+
+const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// SAVE
+async function saveDashboard(data) {
+  const { error } = await db
+    .from('dashboard')
+    .upsert([{ id: "main", data: data, updated_at: new Date() }]);
+
+  if (error) console.error(error);
+}
+
+// LOAD
+async function loadDashboard() {
+  const { data, error } = await db
+    .from('dashboard')
+    .select('*')
+    .eq('id', "main")
+    .single();
+
+  return data?.data || null;
+}
+</script>
 body{font-family:var(--font-sans)}
 .dash{padding:1.25rem 1rem}
 .topbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:1rem}
