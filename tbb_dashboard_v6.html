@@ -1,0 +1,1111 @@
+
+<!-- saved from url=(0067)file:///C:/Users/Unnati%20Unlimited/Downloads/tbb_dashboard_v6.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans)}
+.dash{padding:1.25rem 1rem}
+.topbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:1rem}
+.topbar h1{font-size:18px;font-weight:500;color:var(--color-text-primary)}
+.topbar p{font-size:12px;color:var(--color-text-secondary);margin-top:2px}
+.btn-export{padding:5px 14px;border-radius:20px;font-size:12px;cursor:pointer;border:0.5px solid var(--color-border-tertiary);background:transparent;color:var(--color-text-secondary)}
+.btn-export:hover{background:var(--color-background-secondary)}
+
+.summary-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:1.1rem}
+.sc{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 14px;text-align:center}
+.sc-val{font-size:22px;font-weight:500;color:var(--color-text-primary);line-height:1}
+.sc-lbl{font-size:10px;color:var(--color-text-secondary);margin-top:3px;text-transform:uppercase;letter-spacing:.04em}
+
+.pie-section{border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:14px 16px;margin-bottom:1.1rem}
+.pie-section-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px}
+.pie-section-title{font-size:13px;font-weight:500;color:var(--color-text-primary)}
+.legend-row{display:flex;gap:14px;flex-wrap:wrap}
+.leg-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--color-text-secondary)}
+.leg-sq{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+.pie-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.pie-card{display:flex;flex-direction:column;align-items:center;cursor:pointer;border-radius:var(--border-radius-md);padding:8px 4px;border:0.5px solid transparent;transition:border-color .15s}
+.pie-card:hover{border-color:var(--color-border-tertiary)}
+.pie-card.active{border-color:var(--color-border-primary);background:var(--color-background-secondary)}
+.pie-canvas-wrap{position:relative;width:110px;height:110px}
+.pie-org-label{font-size:11px;font-weight:500;color:var(--color-text-primary);margin-top:6px;text-align:center;line-height:1.3}
+.pie-org-sub{font-size:10px;color:var(--color-text-secondary);text-align:center;margin-top:2px}
+
+.toolbar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1rem;align-items:center}
+.tab{padding:4px 13px;border-radius:20px;font-size:12px;cursor:pointer;border:0.5px solid var(--color-border-tertiary);background:transparent;color:var(--color-text-secondary)}
+.tab.active{background:var(--color-text-primary);color:var(--color-background-primary);border-color:transparent}
+
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;table-layout:fixed}
+th{font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.05em;color:var(--color-text-secondary);padding:8px 10px;border-bottom:0.5px solid var(--color-border-tertiary);text-align:left;white-space:nowrap;background:var(--color-background-secondary)}
+th.c0{width:12%}th.c1{width:18%}th.c2{width:16%}th.c3{width:20%}th.c4{width:11%}th.c5{width:13%}th.c6{width:10%}
+
+td{padding:7px 10px;border-bottom:0.5px solid var(--color-border-tertiary);font-size:12px;vertical-align:middle;color:var(--color-text-primary)}
+td.top{vertical-align:top}
+
+/* org cell */
+.org-cell{padding:8px 10px;vertical-align:top;border-bottom:0.5px solid var(--color-border-tertiary);border-right:0.5px solid var(--color-border-tertiary)}
+.org-inner{display:flex;align-items:center;gap:7px}
+.avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;flex-shrink:0}
+.org-name{font-size:12px;font-weight:500;color:var(--color-text-primary);line-height:1.3}
+.org-meta{font-size:10px;color:var(--color-text-secondary);margin-top:1px}
+
+/* project cell — clean, no dropdowns */
+.proj-cell{display:flex;align-items:flex-start;gap:6px}
+.pdot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.pdot.biz{background:#378ADD}.pdot.pers{background:#1D9E75}
+.ptext{font-size:12px;line-height:1.45;color:var(--color-text-primary)}
+.badge{font-size:9px;padding:1px 5px;border-radius:6px;margin-left:3px;vertical-align:middle}
+.badge-hp{background:#E6F1FB;color:#0C447C}
+.badge-np{background:#EAF3DE;color:#27500A}
+.type-chip{font-size:9px;padding:1px 6px;border-radius:6px;display:inline-block;margin-top:3px}
+
+/* impact cell — inline editable */
+.impact-wrap{cursor:pointer;min-height:20px}
+.impact-val{font-size:11px;color:var(--color-text-secondary);line-height:1.45}
+.impact-edit{width:100%;font-size:11px;padding:3px 6px;border:0.5px solid var(--color-border-tertiary);border-radius:5px;background:var(--color-background-primary);color:var(--color-text-primary);resize:none;line-height:1.4;display:none}
+.impact-wrap.editing .impact-val{display:none}
+.impact-wrap.editing .impact-edit{display:block}
+
+/* actions cell — clean text list, no dropdowns */
+.act-list{display:flex;flex-direction:column;gap:4px}
+.act-row{display:flex;align-items:flex-start;gap:5px}
+.act-arrow{font-size:10px;color:var(--color-text-secondary);flex-shrink:0;margin-top:2px}
+.act-text{font-size:11px;color:var(--color-text-secondary);line-height:1.4;flex:1}
+.act-del{border:none;background:transparent;color:var(--color-text-secondary);cursor:pointer;font-size:10px;padding:0 2px;flex-shrink:0}
+.act-del:hover{color:#E24B4A}
+.add-act-btn{font-size:10px;color:var(--color-text-secondary);cursor:pointer;background:transparent;border:0.5px dashed var(--color-border-tertiary);border-radius:4px;padding:2px 7px;width:100%;text-align:center;margin-top:4px}
+.add-act-btn:hover{background:var(--color-background-secondary)}
+.act-add-form{display:flex;gap:4px;margin-top:4px}
+.act-add-input{flex:1;font-size:11px;padding:3px 6px;border:0.5px solid var(--color-border-tertiary);border-radius:5px;background:var(--color-background-primary);color:var(--color-text-primary)}
+.act-ok{font-size:10px;padding:3px 7px;border-radius:4px;border:none;background:var(--color-text-primary);color:var(--color-background-primary);cursor:pointer}
+.act-cancel{font-size:10px;padding:3px 6px;border-radius:4px;border:0.5px solid var(--color-border-tertiary);background:transparent;color:var(--color-text-secondary);cursor:pointer}
+
+/* status dropdown — drives pie chart */
+.status-sel{font-size:11px;border:0.5px solid var(--color-border-tertiary);border-radius:6px;padding:3px 5px;cursor:pointer;width:100%;font-family:var(--font-sans)}
+
+/* progress — manual % entry */
+.prog-wrap{display:flex;flex-direction:column;gap:4px}
+.prog-input-row{display:flex;align-items:center;gap:5px}
+.pct-input{width:52px;font-size:12px;font-weight:500;padding:3px 6px;border:0.5px solid var(--color-border-tertiary);border-radius:5px;background:var(--color-background-primary);color:var(--color-text-primary);text-align:center}
+.pct-sym{font-size:11px;color:var(--color-text-secondary)}
+.tl-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.prog-bar-bg{height:4px;background:var(--color-border-tertiary);border-radius:2px}
+.prog-bar-fill{height:4px;border-radius:2px;transition:width .3s}
+
+/* timeline cell — date picker */
+.date-input{font-size:11px;padding:3px 6px;border:0.5px solid var(--color-border-tertiary);border-radius:5px;background:var(--color-background-primary);color:var(--color-text-primary);width:100%;cursor:pointer}
+.deadline-soon{color:#854F0B;font-size:10px;margin-top:2px}
+.deadline-over{color:#A32D2D;font-size:10px;margin-top:2px}
+
+/* row controls */
+.del-btn{border:none;background:transparent;color:var(--color-text-secondary);cursor:pointer;padding:2px 4px;border-radius:4px;font-size:11px}
+.del-btn:hover{color:#E24B4A}
+.add-proj-trigger{font-size:11px;color:var(--color-text-secondary);cursor:pointer;background:transparent;border:none;padding:3px 0}
+.add-proj-trigger:hover{color:var(--color-text-primary)}
+.add-proj-form{display:flex;gap:5px;flex-wrap:wrap}
+.ap-input{flex:1;min-width:120px;font-size:11px;padding:4px 7px;border:0.5px solid var(--color-border-tertiary);border-radius:5px;background:var(--color-background-primary);color:var(--color-text-primary)}
+.ap-type{font-size:11px;border:0.5px solid var(--color-border-tertiary);border-radius:5px;padding:4px 5px;background:var(--color-background-primary);color:var(--color-text-primary)}
+.ap-ok{font-size:11px;padding:4px 9px;border-radius:5px;border:none;background:var(--color-text-primary);color:var(--color-background-primary);cursor:pointer}
+.ap-cancel{font-size:11px;padding:4px 8px;border-radius:5px;border:0.5px solid var(--color-border-tertiary);background:transparent;color:var(--color-text-secondary);cursor:pointer}
+</style>
+
+</head><body><div class="dash">
+<h2 class="sr-only">TBB Bold Projects — 7 pie charts with shared legend, clean 7-column table with manual progress and deadlines</h2>
+
+<div class="topbar">
+  <div><h1>TBB: Bold Projects</h1><p>Status drives pie charts · progress is manual · click org pie to filter</p></div>
+  <button class="btn-export" onclick="exportExcel()">↓ Export to Excel</button>
+</div>
+
+<div class="summary-strip" id="summaryStrip">
+    <div class="sc"><div class="sc-val">7</div><div class="sc-lbl">Orgs</div></div>
+    <div class="sc"><div class="sc-val">39</div><div class="sc-lbl">Projects</div></div>
+    <div class="sc"><div class="sc-val" style="color:#0F6E56">0</div><div class="sc-lbl">Done (0%)</div></div>
+    <div class="sc"><div class="sc-val" style="color:#185FA5">18</div><div class="sc-lbl">In progress</div></div>
+    <div class="sc"><div class="sc-val" style="color:#A32D2D">1</div><div class="sc-lbl">At risk</div></div></div>
+
+<div class="pie-section">
+  <div class="pie-section-head">
+    <span class="pie-section-title">Organisation overview — click any chart to filter</span>
+    <div class="legend-row">
+      <span class="leg-item"><span class="leg-sq" style="background:#D3D1C7"></span>Not started</span>
+      <span class="leg-item"><span class="leg-sq" style="background:#378ADD"></span>In progress</span>
+      <span class="leg-item"><span class="leg-sq" style="background:#1D9E75"></span>Done</span>
+      <span class="leg-item"><span class="leg-sq" style="background:#E24B4A"></span>At risk</span>
+    </div>
+  </div>
+  <div class="pie-grid" id="pieGrid">
+    <div class="pie-card" id="pc-ss" onclick="toggleOrgFilter(&#39;ss&#39;)">
+      <div class="pie-canvas-wrap"><canvas id="pie-ss" width="165" height="165" role="img" aria-label="Status breakdown for S S Rathaur" style="display: block; box-sizing: border-box; height: 110px; width: 110px;"></canvas></div>
+      <div class="pie-org-label">S S Rathaur</div>
+      <div class="pie-org-sub">5 projects</div>
+    </div>
+    <div class="pie-card" id="pc-kc" onclick="toggleOrgFilter(&#39;kc&#39;)">
+      <div class="pie-canvas-wrap"><canvas id="pie-kc" width="165" height="165" role="img" aria-label="Status breakdown for Kity Creations" style="display: block; box-sizing: border-box; height: 110px; width: 110px;"></canvas></div>
+      <div class="pie-org-label">Kity Creations</div>
+      <div class="pie-org-sub">9 projects</div>
+    </div>
+    <div class="pie-card" id="pc-jc" onclick="toggleOrgFilter(&#39;jc&#39;)">
+      <div class="pie-canvas-wrap"><canvas id="pie-jc" width="165" height="165" role="img" aria-label="Status breakdown for Jiyaa Comfort" style="display: block; box-sizing: border-box; height: 110px; width: 110px;"></canvas></div>
+      <div class="pie-org-label">Jiyaa Comfort</div>
+      <div class="pie-org-sub">3 projects</div>
+    </div>
+    <div class="pie-card" id="pc-ar" onclick="toggleOrgFilter(&#39;ar&#39;)">
+      <div class="pie-canvas-wrap"><canvas id="pie-ar" width="165" height="165" role="img" aria-label="Status breakdown for Aryaanya" style="display: block; box-sizing: border-box; height: 110px; width: 110px;"></canvas></div>
+      <div class="pie-org-label">Aryaanya</div>
+      <div class="pie-org-sub">4 projects</div>
+    </div>
+    <div class="pie-card" id="pc-ab" onclick="toggleOrgFilter(&#39;ab&#39;)">
+      <div class="pie-canvas-wrap"><canvas id="pie-ab" width="165" height="165" role="img" aria-label="Status breakdown for Ashok Brothers" style="display: block; box-sizing: border-box; height: 110px; width: 110px;"></canvas></div>
+      <div class="pie-org-label">Ashok Brothers</div>
+      <div class="pie-org-sub">3 projects</div>
+    </div>
+    <div class="pie-card" id="pc-ve" onclick="toggleOrgFilter(&#39;ve&#39;)">
+      <div class="pie-canvas-wrap"><canvas id="pie-ve" width="165" height="165" role="img" aria-label="Status breakdown for Volamp Elektrikals" style="display: block; box-sizing: border-box; height: 110px; width: 110px;"></canvas></div>
+      <div class="pie-org-label">Volamp Elektrikals</div>
+      <div class="pie-org-sub">6 projects</div>
+    </div>
+    <div class="pie-card" id="pc-nw" onclick="toggleOrgFilter(&#39;nw&#39;)">
+      <div class="pie-canvas-wrap"><canvas id="pie-nw" width="165" height="165" role="img" aria-label="Status breakdown for Network" style="display: block; box-sizing: border-box; height: 110px; width: 110px;"></canvas></div>
+      <div class="pie-org-label">Network</div>
+      <div class="pie-org-sub">9 projects</div>
+    </div></div>
+</div>
+
+<div class="toolbar">
+  <button class="tab active" onclick="setView(&#39;all&#39;,this)">All</button>
+  <button class="tab" onclick="setView(&#39;business&#39;,this)">Business</button>
+  <button class="tab" onclick="setView(&#39;personal&#39;,this)">Personal</button>
+  <button class="tab" onclick="setView(&#39;at-risk&#39;,this)">At risk</button>
+</div>
+
+<div class="tbl-wrap">
+<table>
+  <thead><tr>
+    <th class="c0">Organisation</th>
+    <th class="c1">Bold project</th>
+    <th class="c2">Impact</th>
+    <th class="c3">Actions</th>
+    <th class="c4">Status</th>
+    <th class="c4">Progress</th>
+    <th class="c5">Deadline</th>
+    <th class="c6" style="width:4%"></th>
+  </tr></thead>
+  <tbody id="tbody"><tr>
+          <td class="org-cell" rowspan="6">
+            <div class="org-inner"><div class="avatar" style="background:#E6F1FB;color:#185FA5">SS</div>
+            <div><div class="org-name">S S Rathaur</div><div class="org-meta">5 proj</div></div></div>
+          </td>
+          <td class="top"><div class="proj-cell"><span class="pdot biz"></span><div><span class="ptext">Hire a Business Analyst (BA)</span><br><span class="type-chip" style="background:#E6F1FB;color:#0C447C">Biz</span></div></div></td>
+          <td class="top"><div class="impact-wrap" id="iw-ss1" onclick="editImpact(&#39;ss1&#39;)"><div class="impact-val"><em style="color:var(--color-text-secondary)">Click to add…</em></div><textarea class="impact-edit" id="ie-ss1" rows="2" onblur="saveImpact(&#39;ss1&#39;)"></textarea></div></td>
+          <td class="top"><div class="act-list"></div><button class="add-act-btn" onclick="startAddAct(&#39;ss1&#39;)">+ action</button></td>
+          <td><select class="status-sel" onchange="updStatus(&#39;ss1&#39;,this.value)" style="background:#F1EFE8;color:#888780;border-color:#88878044"><option selected="">Not started</option><option>In progress</option><option>Done</option><option>At risk</option></select></td>
+          <td><div class="prog-wrap">
+        <div class="prog-input-row">
+          <div class="tl-dot" style="background:#1D9E75"></div>
+          <input type="number" class="pct-input" min="0" max="100" value="80" onchange="updPct(&#39;ss1&#39;,this.value)">
+          <span class="pct-sym">%</span>
+        </div>
+        <div class="prog-bar-bg"><div class="prog-bar-fill" style="width:80%;background:#1D9E75"></div></div>
+      </div></td>
+          <td class="top"><div><input type="date" class="date-input" value="" onchange="updDeadline(&#39;ss1&#39;,this.value)"></div></td>
+          <td><button class="del-btn" onclick="delProj(&#39;ss&#39;,&#39;ss1&#39;)">✕</button></td>
+        </tr><tr>
+          <td class="top"><div class="proj-cell"><span class="pdot biz"></span><div><span class="ptext">Prepare incentive plan for sales team</span><br><span class="type-chip" style="background:#E6F1FB;color:#0C447C">Biz</span></div></div></td>
+          <td class="top"><div class="impact-wrap" id="iw-ss2" onclick="editImpact(&#39;ss2&#39;)"><div class="impact-val">Boosts sales motivation &amp; retention</div><textarea class="impact-edit" id="ie-ss2" rows="2" onblur="saveImpact(&#39;ss2&#39;)">Boosts sales motivation &amp; retention</textarea></div></td>
+          <td class="top"><div class="act-list"><div class="act-row"><span class="act-arrow">↳</span><span class="act-text">Implement incentive system by 25th Apr '26</span><button class="act-del" onclick="delAction(&#39;ss2&#39;,&#39;ssa1&#39;)">✕</button></div></div><button class="add-act-btn" onclick="startAddAct(&#39;ss2&#39;)">+ action</button></td>
+          <td><select class="status-sel" onchange="updStatus(&#39;ss2&#39;,this.value)" style="background:#F1EFE8;color:#888780;border-color:#88878044"><option selected="">Not started</option><option>In progress</option><option>Done</option><option>At risk</option></select></td>
+          <td><div class="prog-wrap">
+        <div class="prog-input-row">
+          <div class="tl-dot" style="background:#E24B4A"></div>
+          <input type="number" class="pct-input" min="0" max="100" value="20" onchange="updPct(&#39;ss2&#39;,this.value)">
+          <span class="pct-sym">%</span>
+        </div>
+        <div class="prog-bar-bg"><div class="prog-bar-fill" style="width:20%;background:#E24B4A"></div></div>
+      </div></td>
+          <td class="top"><div><input type="date" class="date-input" value="2026-04-25" onchange="updDeadline(&#39;ss2&#39;,this.value)"><div class="deadline-over">Overdue by 1d</div></div></td>
+          <td><button class="del-btn" onclick="delProj(&#39;ss&#39;,&#39;ss2&#39;)">✕</button></td>
+        </tr><tr>
+          <td class="top"><div class="proj-cell"><span class="pdot biz"></span><div><span class="ptext">Finalize KRA of Mrs. Rathaur</span><br><span class="type-chip" style="background:#E6F1FB;color:#0C447C">Biz</span></div></div></td>
+          <td class="top"><div class="impact-wrap" id="iw-ss3" onclick="editImpact(&#39;ss3&#39;)"><div class="impact-val"><em style="color:var(--color-text-secondary)">Click to add…</em></div><textarea class="impact-edit" id="ie-ss3" rows="2" onblur="saveImpact(&#39;ss3&#39;)"></textarea></div></td>
+          <td class="top"><div class="act-list"></div><button class="add-act-btn" onclick="startAddAct(&#39;ss3&#39;)">+ action</button></td>
+          <td><select class="status-sel" onchange="updStatus(&#39;ss3&#39;,this.value)" style="background:#F1EFE8;color:#888780;border-color:#88878044"><option selected="">Not started</option><option>In progress</option><option>Done</option><option>At risk</option></select></td>
+          <td><div class="prog-wrap">
+        <div class="prog-input-row">
+          <div class="tl-dot" style="background:#E24B4A"></div>
+          <input type="number" class="pct-input" min="0" max="100" value="0" onchange="updPct(&#39;ss3&#39;,this.value)">
+          <span class="pct-sym">%</span>
+        </div>
+        <div class="prog-bar-bg"><div class="prog-bar-fill" style="width:0%;background:#E24B4A"></div></div>
+      </div></td>
+          <td class="top"><div><input type="date" class="date-input" value="" onchange="updDeadline(&#39;ss3&#39;,this.value)"></div></td>
+          <td><button class="del-btn" onclick="delProj(&#39;ss&#39;,&#39;ss3&#39;)">✕</button></td>
+        </tr><tr>
+          <td class="top"><div class="proj-cell"><span class="pdot biz"></span><div><span class="ptext">Implement data management system</span><br><span class="type-chip" style="background:#E6F1FB;color:#0C447C">Biz</span></div></div></td>
+          <td class="top"><div class="impact-wrap" id="iw-ss4" onclick="editImpact(&#39;ss4&#39;)"><div class="impact-val">Streamlines AR &amp; reporting</div><textarea class="impact-edit" id="ie-ss4" rows="2" onblur="saveImpact(&#39;ss4&#39;)">Streamlines AR &amp; reporting</textarea></div></td>
+          <td class="top"><div class="act-list"></div><button class="add-act-btn" onclick="startAddAct(&#39;ss4&#39;)">+ action</button></td>
+          <td><select class="status-sel" onchange="updStatus(&#39;ss4&#39;,this.value)" style="background:#F1EFE8;color:#888780;border-color:#88878044"><option selected="">Not started</option><option>In progress</option><option>Done</option><option>At risk</option></select></td>
+          <td><div class="prog-wrap">
+        <div class="prog-input-row">
+          <div class="tl-dot" style="background:#E24B4A"></div>
+          <input type="number" class="pct-input" min="0" max="100" value="0" onchange="updPct(&#39;ss4&#39;,this.value)">
+          <span class="pct-sym">%</span>
+        </div>
+        <div class="prog-bar-bg"><div class="prog-bar-fill" style="width:0%;background:#E24B4A"></div></div>
+      </div></td>
+          <td class="top"><div><input type="date" class="date-input" value="" onchange="updDeadline(&#39;ss4&#39;,this.value)"></div></td>
+          <td><button class="del-btn" onclick="delProj(&#39;ss&#39;,&#39;ss4&#39;)">✕</button></td>
+        </tr><tr>
+          <td class="top"><div class="proj-cell"><span class="pdot biz"></span><div><span class="ptext">AR &amp; payment collection</span><br><span class="type-chip" style="background:#E6F1FB;color:#0C447C">Biz</span></div></div></td>
+          <td class="top"><div class="impact-wrap" id="iw-ss5" onclick="editImpact(&#39;ss5&#39;)"><div class="impact-val">Improves cash flow</div><textarea class="impact-edit" id="ie-ss5" rows="2" onblur="saveImpact(&#39;ss5&#39;)">Improves cash flow</textarea></div></td>
+          <td class="top"><div class="act-list"></div><button class="add-act-btn" onclick="startAddAct(&#39;ss5&#39;)">+ action</button></td>
+          <td><select class="status-sel" onchange="updStatus(&#39;ss5&#39;,this.value)" style="background:#F1EFE8;color:#888780;border-color:#88878044"><option selected="">Not started</option><option>In progress</option><option>Done</option><option>At risk</option></select></td>
+          <td><div class="prog-wrap">
+        <div class="prog-input-row">
+          <div class="tl-dot" style="background:#E24B4A"></div>
+          <input type="number" class="pct-input" min="0" max="100" value="0" onchange="updPct(&#39;ss5&#39;,this.value)">
+          <span class="pct-sym">%</span>
+        </div>
+        <div class="prog-bar-bg"><div class="prog-bar-fill" style="width:0%;background:#E24B4A"></div></div>
+      </div></td>
+          <td class="top"><div><input type="date" class="date-input" value="" onchange="updDeadline(&#39;ss5&#39;,this.value)"></div></td>
+          <td><button class="del-btn" onclick="delProj(&#39;ss&#39;,&#39;ss5&#39;)">✕</button></td>
+        </tr><tr><td colspan="7" style="padding:4px 10px;border-bottom:2px solid var(--color-border-tertiary)"><button class="add-proj-trigger" onclick="startAddProj(&#39;ss&#39;)">+ add project to S S Rathaur</button></td></tr><tr>
+          <td class="org-cell" rowspan="10">
+            <div class="org-inner"><div class="avatar" style="background:#FAEEDA;color:#854F0B">KC</div>
+            <div><div class="org-name">Kity Creations</div><div class="org-meta">9 proj</div></div></div>
+          </td>
+          <td class="top"><div class="proj-cell"><span class="pdot biz"></span><div><span class="ptext">Mission South for 30cr in a year<span class="badge badge-hp">HP</span></span><br><span class="type-chip" style="background:#E6F1FB;color:#0C447C">Biz</span></div></div></td>
+          <td class="top"><div class="impact-wrap" id="iw-kc1" onclick="editImpact(&#39;kc1&#39;)"><div class="impact-val">Opens new geography, 30cr revenue</div><textarea class="impact-edit" id="ie-kc1" rows="2" onblur="saveImpact(&#39;kc1&#39;)">Opens new geography, 30cr revenue</textarea></div></td>
+          <td class="top"><div class="act-list"><div class="act-row"><span class="act-arrow">↳</span><span class="act-text">Hired 1 dedicated person for South</span><button class="act-del" onclick="delAction(&#39;kc1&#39;,&#39;kca1&#39;)">✕</button></div></div><button class="add-act-btn" onclick="startAddAct(&#39;kc1&#39;)">+ action</button></td>
+          <td><select class="status-sel" onchange="updStatus(&#39;kc1&#39;,this.value)" style="background:#E6F1FB;color:#185FA5;border-color:#185FA544"><option>Not started</option><option selected="">In progress</option><option>Done</option><option>At risk</option></select></td>
+          <td><div class="prog-wrap">
+        <div class="prog-input-row">
+          <div class="tl-dot" style="background:#E24B4A"></div>
+          <input type="number" class="pct-input" min="0" max="100" value="30" onchange="updPct(&#39;kc1&#39;,this.value)">
+          <span class="pct-sym">%</span>
+        </div>
+        <div class="prog-bar-bg"><div class="prog-bar-fill" style="width:30%;background:#E24B4A"></div></div>
+      </div></td>
+          <td class="top"><div><input type="date" class="date-input" value="2027-03-31" onchange="updDeadline(&#39;kc1&#39;,this.value)"></div></td>
+          <td><button class="del-btn" onclick="delProj(&#39;kc&#39;,&#39;kc1&#39;)">✕</button></td>
+        </tr><tr>
+          <td class="top"><div class="proj-cell"><span class="pdot biz"></span><div><span class="ptext">Outbound Sales — HO sales from 30% to target<span class="badge badge-np">NP</span></span><br><span class="type-chip" style="background:#E6F1FB;color:#0C447C">Biz</span></div></div></td>
+          <td class="top"><div class="impact-wrap" id="iw-kc2" onclick="editImpact(&#39;kc2&#39;)"><div class="impact-val">Reduces dependency on inbound</div><textarea class="impact-edit" id="ie-kc2" rows="2" onblur="saveImpact(&#39;kc2&#39;)">Reduces dependency on inbound</textarea></div></td>
+          <td class="top"><div class="act-list"><div class="act-row"><span class="act-arrow">↳</span><span class="act-text">Started outbound sales script</span><button class="act-del" onclick="delAction(&#39;kc2&#39;,&#39;kca2&#39;)">✕</button></div></div><button class="add-act-btn" onclick="startAddAct(&#39;kc2&#39;)">+ action</button></td>
+          <td><select class="status-sel" onchange="updStatus(&#39;kc2&#39;,this.value)" style="background:#E6F1FB;color:#185FA5;border-color:#185FA544"><option>Not started</option><option selected="">In progress</option><option>Done</option><option>At risk</option></select></td>
+          <td><div class="prog-wrap">
+        <div class="prog-input-row">
+          <div class="tl-dot" style="background:#BA7517"></div>
+          <input type="number" class="pct-input" min="0" max="100" value="45" onchange="updPct(&#39;kc2&#39;,this.value)">
+          <span class="pct-sym">%</span>
+        </div>
+        <div class="prog-bar-bg"><div class="prog-bar-fill" style="width:45%;background:#BA7517"></div></div>
+      </div></td>
+          <td class="top"><div><input type="date" class="date-input" value="2027-03-31" onchange="updDeadline(&#39;kc2&#39;,this.value)"></div></td>
+          <td><button class="del-btn" onclick="delProj(&#39;kc&#39;,&#39;kc2&#39;)">✕</button></td>
+        </tr><tr>
+          <td class="top"><div class="proj-cell"><span class="pdot biz"></span><div><span class="ptext">Town hall plan<span class="badge badge-hp">HP</span></span><br><span class="type-chip" style="background:#E6F1FB;color:#0C447C">Biz</span></div></div></td>
+          <td class="top"><div class="impact-wrap" id="iw-kc3" onclick="editImpact(&#39;kc3&#39;)"><div class="impact-val">Aligns team with org vision</div><textarea class="impact-edit" id="ie-kc3" rows="2" onblur="saveImpact(&#39;kc3&#39;)">Aligns team with org vision</textarea></div></td>
+          <td class="top"><div class="act-list"><div class="act-row"><span class="act-arrow">↳</span><span class="act-text">Planning started</span><button class="act-del" onclick="delAction(&#39;kc3&#39;,&#39;kca3&#39;)">✕</button></div></div><button class="add-act-btn" onclick="startAddAct(&#39;kc3&#39;)">+ action</button></td>
+          <td><select class="status-sel" onchange="updStatus(&#39;kc3&#39;,this.value)" style="background:#E6F1FB;color:#185FA5;border-color:#185FA544"><option>Not started</option><option selected="">In progress</option><option>Done</option><option>At risk</option></select></td>
+          <td><div class="prog-wrap">
+        <div class="prog-input-row">
+          <div class="tl-dot" style="background:#1D9E75"></div>
+          <input type="number" class="pct-input" min="0" max="100" value="100" onchange="updPct(&#39;kc3&#39;,this.value)">
+          <span class="pct-sym">%</span>
+        </div>
+        <div class="prog-bar-bg"><div class="prog-bar-fill" style="width:100%;background:#1D9E75"></div></div>
+      </div></td>
+          <td class="top"><div><input type="date" class="date-input" value="2026-05-31" onchange="updDeadline(&#39;kc3&#39;,this.value)"></div></td>
+          <td><button class="del-btn" onclick="delProj(&#39;kc&#39;,&#39;kc3&#39;)">✕</button></td>
+        </tr><tr>
+          <td class="top"><div class="proj-cell"><span class="pdot biz"></span><div><span class="ptext">Indowestern 1cr in Q1 FY27<span class="badge badge-np">NP</span></span><br><span class="type-chip" style="background:#E6F1FB;color:#0C447C">Biz</span></div></div></td>
+          <td class="top"><div class="impact-wrap" id="iw-kc4" onclick="editImpact(&#39;kc4&#39;)"><div class="impact-val">New product category revenue</div><textarea class="impact-edit" id="ie-kc4" rows="2" onblur="saveImpact(&#39;kc4&#39;)">New product category revenue</textarea></div></td>
+          <td class="top"><div class="act-list"><div class="act-row"><span class="act-arrow">↳</span><span class="act-text">Target planning done with agents</span><button class="act-del" onclick="delAction(&#39;kc4&#39;,&#39;kca4&#39;)">✕</button></div></div><button class="add-act-btn" onclick="startAddAct(&#39;kc4&#39;)">+ action</button></td>
+          <td><select class="status-sel" onchange="updStatus(&#39;kc4&#39;,this.value)" style="background:#E6F1FB;color:#185FA5;border-color:#185FA544"><option>Not started</option><option selected="">In progress</option><option>Done</option><option>At risk</option></select></td>
+          <td><div class="prog-wrap">
+        <div class="prog-input-row">
+          <div class="tl-dot" style="background:#BA7517"></div>
+          <input type="number" class="pct-input" min="0" max="100" value="60" onchange="updPct(&#39;kc4&#39;,this.value)">
+          <span class="pct-sym">%</span>
+        </div>
+        <div class="prog-bar-bg"><div class="prog-bar-fill" style="width:60%;background:#BA7517"></div></div>
+      </div></td>
+          <td class="top"><div><input type="date" class="date-input" value="2026-06-30" onchange="updDeadline(&#39;kc4&#39;,this.value)"></div></td>
+          <td><button class="del-btn" onclick="delProj(&#39;kc&#39;,&#39;kc4&#39;)">✕</button></td>
+        </tr><tr>
+          <td class="top"><div class="proj-cell"><span class="pdot biz"></span><div><span class="ptext">Agent schemes by 1st May</span><br><span class="type-chip" style="background:#E6F1FB;color:#0C447C">Biz</span></div></div></td>
+          <td class="top"><div class="impact-wrap" id="iw-kc5" onclick="editImpact(&#39;kc5&#39;)"><div class="impact-val">Activates agent channel</div><textarea class="impact-edit" id="ie-kc5" rows="2" onblur="saveImpact(&#39;kc5&#39;)">Activates agent channel</textarea></div></td>
+          <td class="top"><div class="act-list"></div><button class="add-act-btn" onclick="startAddAct(&#39;kc5&#39;)">+ action</button></td>
+          <td><select class="status-sel" onchange="updStatus(&#39;kc5&#39;,this.value)" style="background:#FCEBEB;color:#A32D2D;border-color:#A32D2D44"><option>Not started</option><option>In progress</option><option>Done</option><option selected="">At risk</option></select></td>
+          <td><div class="prog-wrap">
+        <div class="prog-input-row">
+          <div class="tl-dot" style="background:#E24B4A"></div>
+          <input type="number" class="pct-input" min="0" max="100" value="0" onchange="updPct(&#39;kc5&#39;,this.value)">
+          <span class="pct-sym">%</span>
+        </div>
+        <div class="prog-bar-bg"><div class="prog-bar-fill" style="width:0%;background:#E24B4A"></div></div>
+      </div></td>
+          <td class="top"><div><input type="date" class="date-input" value="2026-05-01" onchange="updDeadline(&#39;kc5&#39;,this.value)"><div class="deadline-soon">Due in 5d</div></div></td>
+          <td><button class="del-btn" onclick="delProj(&#39;kc&#39;,&#39;kc5&#39;)">✕</button></td>
+        </tr><tr>
+          <td class="top"><div class="proj-cell"><span class="pdot pers"></span><div><span class="ptext">Follow own commitment<span class="badge badge-hp">HP</span></span><br><span class="type-chip" style="background:#EAF3DE;color:#27500A">Personal</span></div></div></td>
+          <td class="top"><div class="impact-wrap" id="iw-kc6" onclick="editImpact(&#39;kc6&#39;)"><div class="impact-val">Builds leadership credibility</div><textarea class="impact-edit" id="ie-kc6" rows="2" onblur="saveImpact(&#39;kc6&#39;)">Builds leadership credibility</textarea></div></td>
+          <td class="top"><div class="act-list"></div><button class="add-act-btn" onclick="startAddAct(&#39;kc6&#39;)">+ action</button></td>
+          <td><select class="status-sel" onchange="updStatus(&#39;kc6&#39;,this.value)" style="background:#E6F1FB;color:#185FA5;border-color:#185FA544"><option>Not started</option><option selected="">In progress</option><option>Done</option><option>At risk</option></select></td>
+          <td><div class="prog-wrap">
+        <div class="prog-input-row">
+          <div class="tl-dot" style="background:#BA7517"></div>
+          <input type="number" class="pct-input" min="0" max="100" value="40" onchange="updPct(&#39;kc6&#39;,this.value)">
+          <span class="pct-sym">%</span>
+        </div>
+        <div class="prog-bar-bg"><div class="prog-bar-fill" style="width:40%;background:#BA7517"></div></div>
+      </div></td>
+          <td class="top"><div><input type="date" class="date-input" value="" onchange="updDeadline(&#39;kc6&#39;,this.value)"></div></td>
+          <td><button class="del-btn" onclick="delProj(&#39;kc&#39;,&#39;kc6&#39;)">✕</button></td>
+        </tr><tr>
+          <td class="top"><div class="proj-cell"><span class="pdot pers"></span><div><span class="ptext">Being Courageous<span class="badge badge-hp">HP</span></span><br><span class="type-chip" style="background:#EAF3DE;color:#27500A">Personal</span></div></div></td>
+          <td class="top"><div class="impact-wrap" id="iw-kc7" onclick="editImpact(&#39;kc7&#39;)"><div class="impact-val">Enables bold decisions</div><textarea class="impact-edit" id="ie-kc7" rows="2" onblur="saveImpact(&#39;kc7&#39;)">Enables bold decisions</textarea></div></td>
+          <td class="top"><div class="act-list"></div><button class="add-act-btn" onclick="startAddAct(&#39;kc7&#39;)">+ action</button></td>
+          <td><select class="status-sel" onchange="updStatus(&#39;kc7&#39;,this.value)" style="background:#E6F1FB;color:#185FA5;border-color:#185FA544"><option>Not started</option><option selected="">In progress</option><option>Done</option><option>At risk</option></select></td>
+          <td><div class="prog-wrap">
+        <div class="prog-input-row">
+          <div class="tl-dot" style="background:#BA7517"></div>
+          <input type="number" class="pct-input" min="0" max="100" value="50" onchange="updPct(&#39;kc7&#39;,this.value)">
+          <span class="pct-sym">%</span>
+        </div>
+        <div class="prog-bar-bg"><div class="prog-bar-fill" style="width:50%;background:#BA7517"></div></div>
+      </div></td>
+          <td class="top"><div><input type="date" class="date-input" value="" onchange="updDeadline(&#39;kc7&#39;,this.value)"></div></td>
+          <td><button class="del-btn" onclick="delProj(&#39;kc&#39;,&#39;kc7&#39;)">✕</button></td>
+        </tr><tr>
+          <td class="top"><div class="proj-cell"><span class="pdot pers"></span><div><span class="ptext">Commitment — Man of Words<span class="badge badge-np">NP</span></span><br><span class="type-chip" style="background:#EAF3DE;color:#27500A">Personal</span></div></div></td>
+          <td class="top"><div class="impact-wrap" id="iw-kc8" onclick="editImpact(&#39;kc8&#39;)"><div class="impact-val">Trust within team</div><textarea class="impact-edit" id="ie-kc8" rows="2" onblur="saveImpact(&#39;kc8&#39;)">Trust within team</textarea></div></td>
+          <td class="top"><div class="act-list"></div><button class="add-act-btn" onclick="startAddAct(&#39;kc8&#39;)">+ action</button></td>
+          <td><select class="status-sel" onchange="updStatus(&#39;kc8&#39;,this.value)" style="background:#E6F1FB;color:#185FA5;border-color:#185FA544"><option>Not started</option><option selected="">In progress</option><option>Done</option><option>At risk</option></select></td>
+          <td><div class="prog-wrap">
+        <div class="prog-input-row">
+          <div class="tl-dot" style="background:#BA7517"></div>
+          <input type="number" class="pct-input" min="0" max="100" value="50" onchange="updPct(&#39;kc8&#39;,this.value)">
+          <span class="pct-sym">%</span>
+        </div>
+        <div class="prog-bar-bg"><div class="prog-bar-fill" style="width:50%;background:#BA7517"></div></div>
+      </div></td>
+          <td class="top"><div><input type="date" class="date-input" value="" onchange="updDeadline(&#39;kc8&#39;,this.value)"></div></td>
+          <td><button class="del-btn" onclick="delProj(&#39;kc&#39;,&#39;kc8&#39;)">✕</button></td>
+        </tr><tr>
+          <td class="top"><div class="proj-cell"><span class="pdot pers"></span><div><span class="ptext">Good Listener — Respond, not react<span class="badge badge-np">NP</span></span><br><span class="type-chip" style="background:#EAF3DE;color:#27500A">Personal</span></div></div></td>
+          <td class="top"><div class="impact-wrap" id="iw-kc9" onclick="editImpact(&#39;kc9&#39;)"><div class="impact-val">Better team relationships</div><textarea class="impact-edit" id="ie-kc9" rows="2" onblur="saveImpact(&#39;kc9&#39;)">Better team relationships</textarea></div></td>
+          <td class="top"><div class="act-list"></div><button class="add-act-btn" onclick="startAddAct(&#39;kc9&#39;)">+ action</button></td>
+          <td><select class="status-sel" onchange="updStatus(&#39;kc9&#39;,this.value)" style="background:#E6F1FB;color:#185FA5;border-color:#185FA544"><option>Not started</option><option selected="">In progress</option><option>Done</option><option>At risk</option></select></td>
+          <td><div class="prog-wrap">
+        <div class="prog-input-row">
+          <div class="tl-dot" style="background:#BA7517"></div>
+          <input type="number" class="pct-input" min="0" max="100" value="50" onchange="updPct(&#39;kc9&#39;,this.value)">
+          <span class="pct-sym">%</span>
+        </div>
+        <div class="prog-bar-bg"><div class="prog-bar-fill" style="width:50%;background:#BA7517"></div></div>
+      </div></td>
+          <td class="top"><div><input type="date" class="date-input" value="" onchange="updDeadline(&#39;kc9&#39;,this.value)"></div></td>
+          <td><button class="del-btn" onclick="delProj(&#39;kc&#39;,&#39;kc9&#39;)">✕</button></td>
+        </tr><tr><td colspan="7" style="padding:4px 10px;border-bottom:2px solid var(--color-border-tertiary)"><button class="add-proj-trigger" onclick="startAddProj(&#39;kc&#39;)">+ add project to Kity Creations</button></td></tr><tr>
+          <td class="org-cell" rowspan="4">
+            <div class="org-inner"><div class="avatar" style="background:#FBEAF0;color:#993556">JC</div>
+            <div><div class="org-name">Jiyaa Comfort</div><div class="org-meta">3 proj</div></div></div>
+          </td>
+          <td class="top"><div class="proj-cell"><span class="pdot biz"></span><div><span class="ptext">10 performance reviews per salesperson FY27</span><br><span class="type-chip" style="background:#E6F1FB;color:#0C447C">Biz</span></div></div></td>
+          <td class="top"><div class="impact-wrap" id="iw-jc1" onclick="editImpact(&#39;jc1&#39;)"><div class="impact-val">Improves sales team output</div><textarea class="impact-edit" id="ie-jc1" rows="2" onblur="saveImpact(&#39;jc1&#39;)">Improves sales team output</textarea></div></td>
+          <td class="top"><div class="act-list"></div><button class="add-act-btn" onclick="startAddAct(&#39;jc1&#39;)">+ action</button></td>
+          <td><select class="status-sel" onchange="updStatus(&#39;jc1&#39;,this.value)" style="background:#F1EFE8;color:#888780;border-color:#88878044"><option selected="">Not started</option><option>In progress</option><option>Done</option><option>At risk</option></select></td>
+          <td><div class="prog-wrap">
+        <div class="prog-input-row">
+          <div class="tl-dot" style="background:#E24B4A"></div>
+          <input type="number" class="pct-input" min="0" max="100" value="0" onchange="updPct(&#39;jc1&#39;,this.value)">
+          <span class="pct-sym">%</span>
+        </div>
+        <div class="prog-bar-bg"><div class="prog-bar-fill" style="width:0%;background:#E24B4A"></div></div>
+      </div></td>
+          <td class="top"><div><input type="date" class="date-input" value="2027-03-31" onchange="updDeadline(&#39;jc1&#39;,this.value)"></div></td>
+          <td><button class="del-btn" onclick="delProj(&#39;jc&#39;,&#39;jc1&#39;)">✕</button></td>
+        </tr><tr>
+          <td class="top"><div class="proj-cell"><span class="pdot biz"></span><div><span class="ptext">Prepare target &amp; incentive plans for sales</span><br><span class="type-chip" style="background:#E6F1FB;color:#0C447C">Biz</span></div></div></td>
+          <td class="top"><div class="impact-wrap" id="iw-jc2" onclick="editImpact(&#39;jc2&#39;)"><div class="impact-val">Drives goal clarity &amp; motivation</div><textarea class="impact-edit" id="ie-jc2" rows="2" onblur="saveImpact(&#39;jc2&#39;)">Drives goal clarity &amp; motivation</textarea></div></td>
+          <td class="top"><div class="act-list"></div><button class="add-act-btn" onclick="startAddAct(&#39;jc2&#39;)">+ action</button></td>
+          <td><select class="status-sel" onchange="updStatus(&#39;jc2&#39;,this.value)" style="background:#F1EFE8;color:#888780;border-color:#88878044"><option selected="">Not started</option><option>In progress</option><option>Done</option><option>At risk</option></select></td>
+          <td><div class="prog-wrap">
+        <div class="prog-input-row">
+          <div class="tl-dot" style="background:#E24B4A"></div>
+          <input type="number" class="pct-input" min="0" max="100" value="0" onchange="updPct(&#39;jc2&#39;,this.value)">
+          <span class="pct-sym">%</span>
+        </div>
+        <div class="prog-bar-bg"><div class="prog-bar-fill" style="width:0%;background:#E24B4A"></div></div>
+      </div></td>
+          <td class="top"><div><input type="date" class="date-input" value="2026-06-30" onchange="updDeadline(&#39;jc2&#39;,this.value)"></div></td>
+          <td><button class="del-btn" onclick="delProj(&#39;jc&#39;,&#39;jc2&#39;)">✕</button></td>
+        </tr><tr>
+          <td class="top"><div class="proj-cell"><span class="pdot pers"></span><div><span class="ptext">Create and streamline a wealth portfolio</span><br><span class="type-chip" style="background:#EAF3DE;color:#27500A">Personal</span></div></div></td>
+          <td class="top"><div class="impact-wrap" id="iw-jc3" onclick="editImpact(&#39;jc3&#39;)"><div class="impact-val">Financial security &amp; growth</div><textarea class="impact-edit" id="ie-jc3" rows="2" onblur="saveImpact(&#39;jc3&#39;)">Financial security &amp; growth</textarea></div></td>
+          <td class="top"><div class="act-list"></div><button class="add-act-btn" onclick="startAddAct(&#39;jc3&#39;)">+ action</button></td>
+          <td><select class="status-sel" onchange="updStatus(&#39;jc3&#39;,this.value)" style="background:#F1EFE8;color:#888780;border-color:#88878044"><option selected="">Not started</option><option>In progress</option><option>Done</option><option>At risk</option></select></td>
+          <td><div class="prog-wrap">
+        <div class="prog-input-row">
+          <div class="tl-dot" style="background:#E24B4A"></div>
+          <input type="number" class="pct-input" min="0" max="100" value="0" onchange="updPct(&#39;jc3&#39;,this.value)">
+          <span class="pct-sym">%</span>
+        </div>
+        <div class="prog-bar-bg"><div class="prog-bar-fill" style="width:0%;background:#E24B4A"></div></div>
+      </div></td>
+          <td class="top"><div><input type="date" class="date-input" value="" onchange="updDeadline(&#39;jc3&#39;,this.value)"></div></td>
+          <td><button class="del-btn" onclick="delProj(&#39;jc&#39;,&#39;jc3&#39;)">✕</button></td>
+        </tr><tr><td colspan="7" style="padding:4px 10px;border-bottom:2px solid var(--color-border-tertiary)"><button class="add-proj-trigger" onclick="startAddProj(&#39;jc&#39;)">+ add project to Jiyaa Comfort</button></td></tr><tr>
+          <td class="org-cell" rowspan="5">
+            <div class="org-inner"><div class="avatar" style="background:#EAF3DE;color:#3B6D11">AR</div>
+            <div><div class="org-name">Aryaanya</div><div class="org-meta">4 proj</div></div></div>
+          </td>
+          <td class="top"><div class="proj-cell"><span class="pdot biz"></span><div><span class="ptext">Team growth &amp; sales growth ratio</span><br><span class="type-chip" style="background:#E6F1FB;color:#0C447C">Biz</span></div></div></td>
+          <td class="top"><div class="impact-wrap" id="iw-ar1" onclick="editImpact(&#39;ar1&#39;)"><div class="impact-val">Scalable sales structure</div><textarea class="impact-edit" id="ie-ar1" rows="2" onblur="saveImpact(&#39;ar1&#39;)">Scalable sales structure</textarea></div></td>
+          <td class="top"><div class="act-list"></div><button class="add-act-btn" onclick="startAddAct(&#39;ar1&#39;)">+ action</button></td>
+          <td><select class="status-sel" onchange="updStatus(&#39;ar1&#39;,this.value)" style="background:#F1EFE8;color:#888780;border-color:#88878044"><option selected="">Not started</option><option>In progress</option><option>Done</option><option>At risk</option></select></td>
+          <td><div class="prog-wrap">
+        <div class="prog-input-row">
+          <div class="tl-dot" style="background:#E24B4A"></div>
+          <input type="number" class="pct-input" min="0" max="100" value="0" onchange="updPct(&#39;ar1&#39;,this.value)">
+          <span class="pct-sym">%</span>
+        </div>
+        <div class="prog-bar-bg"><div class="prog-bar-fill" style="width:0%;background:#E24B4A"></div></div>
+      </div></td>
+          <td class="top"><div><input type="date" class="date-input" value="2027-03-31" onchange="updDeadline(&#39;ar1&#39;,this.value)"></div></td>
+          <td><button class="del-btn" onclick="delProj(&#39;ar&#39;,&#39;ar1&#39;)">✕</button></td>
+        </tr><tr>
+          <td class="top"><div class="proj-cell"><span class="pdot biz"></span><div><span class="ptext">2nd Saturday — Internal board award</span><br><span class="type-chip" style="background:#E6F1FB;color:#0C447C">Biz</span></div></div></td>
+          <td class="top"><div class="impact-wrap" id="iw-ar2" onclick="editImpact(&#39;ar2&#39;)"><div class="impact-val">Boosts team morale &amp; recognition</div><textarea class="impact-edit" id="ie-ar2" rows="2" onblur="saveImpact(&#39;ar2&#39;)">Boosts team morale &amp; recognition</textarea></div></td>
+          <td class="top"><div class="act-list"></div><button class="add-act-btn" onclick="startAddAct(&#39;ar2&#39;)">+ action</button></td>
+          <td><select class="status-sel" onchange="updStatus(&#39;ar2&#39;,this.value)" style="background:#F1EFE8;color:#888780;border-color:#88878044"><option selected="">Not started</option><option>In progress</option><option>Done</option><option>At risk</option></select></td>
+          <td><div class="prog-wrap">
+        <div class="prog-input-row">
+          <div class="tl-dot" style="background:#E24B4A"></div>
+          <input type="number" class="pct-input" min="0" max="100" value="0" onchange="updPct(&#39;ar2&#39;,this.value)">
+          <span class="pct-sym">%</span>
+        </div>
+        <div class="prog-bar-bg"><div class="prog-bar-fill" style="width:0%;background:#E24B4A"></div></div>
+      </div></td>
+          <td class="top"><div><input type="date" class="date-input" value="" onchange="updDeadline(&#39;ar2&#39;,this.value)"></div></td>
+          <td><button class="del-btn" onclick="delProj(&#39;ar&#39;,&#39;ar2&#39;)">✕</button></td>
+        </tr><tr>
+          <td class="top"><div class="proj-cell"><span class="pdot biz"></span><div><span class="ptext">4th Saturday — Cricket Carnival</span><br><span class="type-chip" style="background:#E6F1FB;color:#0C447C">Biz</span></div></div></td>
+          <td class="top"><div class="impact-wrap" id="iw-ar3" onclick="editImpact(&#39;ar3&#39;)"><div class="impact-val">Team bonding &amp; culture</div><textarea class="impact-edit" id="ie-ar3" rows="2" onblur="saveImpact(&#39;ar3&#39;)">Team bonding &amp; culture</textarea></div></td>
+          <td class="top"><div class="act-list"></div><button class="add-act-btn" onclick="startAddAct(&#39;ar3&#39;)">+ action</button></td>
+          <td><select class="status-sel" onchange="updStatus(&#39;ar3&#39;,this.value)" style="background:#F1EFE8;color:#888780;border-color:#88878044"><option selected="">Not started</option><option>In progress</option><option>Done</option><option>At risk</option></select></td>
+          <td><div class="prog-wrap">
+        <div class="prog-input-row">
+          <div class="tl-dot" style="background:#E24B4A"></div>
+          <input type="number" class="pct-input" min="0" max="100" value="0" onchange="updPct(&#39;ar3&#39;,this.value)">
+          <span class="pct-sym">%</span>
+        </div>
+        <div class="prog-bar-bg"><div class="prog-bar-fill" style="width:0%;background:#E24B4A"></div></div>
+      </div></td>
+          <td class="top"><div><input type="date" class="date-input" value="" onchange="updDeadline(&#39;ar3&#39;,this.value)"></div></td>
+          <td><button class="del-btn" onclick="delProj(&#39;ar&#39;,&#39;ar3&#39;)">✕</button></td>
+        </tr><tr>
+          <td class="top"><div class="proj-cell"><span class="pdot biz"></span><div><span class="ptext">Interior — Turnkey Projects onboard</span><br><span class="type-chip" style="background:#E6F1FB;color:#0C447C">Biz</span></div></div></td>
+          <td class="top"><div class="impact-wrap" id="iw-ar4" onclick="editImpact(&#39;ar4&#39;)"><div class="impact-val">New revenue stream</div><textarea class="impact-edit" id="ie-ar4" rows="2" onblur="saveImpact(&#39;ar4&#39;)">New revenue stream</textarea></div></td>
+          <td class="top"><div class="act-list"></div><button class="add-act-btn" onclick="startAddAct(&#39;ar4&#39;)">+ action</button></td>
+          <td><select class="status-sel" onchange="updStatus(&#39;ar4&#39;,this.value)" style="background:#F1EFE8;color:#888780;border-color:#88878044"><option selected="">Not started</option><option>In progress</option><option>Done</option><option>At risk</option></select></td>
+          <td><div class="prog-wrap">
+        <div class="prog-input-row">
+          <div class="tl-dot" style="background:#E24B4A"></div>
+          <input type="number" class="pct-input" min="0" max="100" value="0" onchange="updPct(&#39;ar4&#39;,this.value)">
+          <span class="pct-sym">%</span>
+        </div>
+        <div class="prog-bar-bg"><div class="prog-bar-fill" style="width:0%;background:#E24B4A"></div></div>
+      </div></td>
+          <td class="top"><div><input type="date" class="date-input" value="2026-09-30" onchange="updDeadline(&#39;ar4&#39;,this.value)"></div></td>
+          <td><button class="del-btn" onclick="delProj(&#39;ar&#39;,&#39;ar4&#39;)">✕</button></td>
+        </tr><tr><td colspan="7" style="padding:4px 10px;border-bottom:2px solid var(--color-border-tertiary)"><button class="add-proj-trigger" onclick="startAddProj(&#39;ar&#39;)">+ add project to Aryaanya</button></td></tr><tr>
+          <td class="org-cell" rowspan="4">
+            <div class="org-inner"><div class="avatar" style="background:#E1F5EE;color:#0F6E56">AB</div>
+            <div><div class="org-name">Ashok Brothers</div><div class="org-meta">3 proj</div></div></div>
+          </td>
+          <td class="top"><div class="proj-cell"><span class="pdot biz"></span><div><span class="ptext">Packaging machine — Lr. Sarvesh</span><br><span class="type-chip" style="background:#E6F1FB;color:#0C447C">Biz</span></div></div></td>
+          <td class="top"><div class="impact-wrap" id="iw-ab1" onclick="editImpact(&#39;ab1&#39;)"><div class="impact-val">Reduces packaging cost &amp; time</div><textarea class="impact-edit" id="ie-ab1" rows="2" onblur="saveImpact(&#39;ab1&#39;)">Reduces packaging cost &amp; time</textarea></div></td>
+          <td class="top"><div class="act-list"></div><button class="add-act-btn" onclick="startAddAct(&#39;ab1&#39;)">+ action</button></td>
+          <td><select class="status-sel" onchange="updStatus(&#39;ab1&#39;,this.value)" style="background:#F1EFE8;color:#888780;border-color:#88878044"><option selected="">Not started</option><option>In progress</option><option>Done</option><option>At risk</option></select></td>
+          <td><div class="prog-wrap">
+        <div class="prog-input-row">
+          <div class="tl-dot" style="background:#E24B4A"></div>
+          <input type="number" class="pct-input" min="0" max="100" value="0" onchange="updPct(&#39;ab1&#39;,this.value)">
+          <span class="pct-sym">%</span>
+        </div>
+        <div class="prog-bar-bg"><div class="prog-bar-fill" style="width:0%;background:#E24B4A"></div></div>
+      </div></td>
+          <td class="top"><div><input type="date" class="date-input" value="2026-07-31" onchange="updDeadline(&#39;ab1&#39;,this.value)"></div></td>
+          <td><button class="del-btn" onclick="delProj(&#39;ab&#39;,&#39;ab1&#39;)">✕</button></td>
+        </tr><tr>
+          <td class="top"><div class="proj-cell"><span class="pdot biz"></span><div><span class="ptext">L2 — 3 positions to fill</span><br><span class="type-chip" style="background:#E6F1FB;color:#0C447C">Biz</span></div></div></td>
+          <td class="top"><div class="impact-wrap" id="iw-ab2" onclick="editImpact(&#39;ab2&#39;)"><div class="impact-val">Builds second-line leadership</div><textarea class="impact-edit" id="ie-ab2" rows="2" onblur="saveImpact(&#39;ab2&#39;)">Builds second-line leadership</textarea></div></td>
+          <td class="top"><div class="act-list"></div><button class="add-act-btn" onclick="startAddAct(&#39;ab2&#39;)">+ action</button></td>
+          <td><select class="status-sel" onchange="updStatus(&#39;ab2&#39;,this.value)" style="background:#F1EFE8;color:#888780;border-color:#88878044"><option selected="">Not started</option><option>In progress</option><option>Done</option><option>At risk</option></select></td>
+          <td><div class="prog-wrap">
+        <div class="prog-input-row">
+          <div class="tl-dot" style="background:#E24B4A"></div>
+          <input type="number" class="pct-input" min="0" max="100" value="0" onchange="updPct(&#39;ab2&#39;,this.value)">
+          <span class="pct-sym">%</span>
+        </div>
+        <div class="prog-bar-bg"><div class="prog-bar-fill" style="width:0%;background:#E24B4A"></div></div>
+      </div></td>
+          <td class="top"><div><input type="date" class="date-input" value="2026-06-30" onchange="updDeadline(&#39;ab2&#39;,this.value)"></div></td>
+          <td><button class="del-btn" onclick="delProj(&#39;ab&#39;,&#39;ab2&#39;)">✕</button></td>
+        </tr><tr>
+          <td class="top"><div class="proj-cell"><span class="pdot biz"></span><div><span class="ptext">Customer segmentation</span><br><span class="type-chip" style="background:#E6F1FB;color:#0C447C">Biz</span></div></div></td>
+          <td class="top"><div class="impact-wrap" id="iw-ab3" onclick="editImpact(&#39;ab3&#39;)"><div class="impact-val">Targeted sales &amp; better margins</div><textarea class="impact-edit" id="ie-ab3" rows="2" onblur="saveImpact(&#39;ab3&#39;)">Targeted sales &amp; better margins</textarea></div></td>
+          <td class="top"><div class="act-list"></div><button class="add-act-btn" onclick="startAddAct(&#39;ab3&#39;)">+ action</button></td>
+          <td><select class="status-sel" onchange="updStatus(&#39;ab3&#39;,this.value)" style="background:#F1EFE8;color:#888780;border-color:#88878044"><option selected="">Not started</option><option>In progress</option><option>Done</option><option>At risk</option></select></td>
+          <td><div class="prog-wrap">
+        <div class="prog-input-row">
+          <div class="tl-dot" style="background:#E24B4A"></div>
+          <input type="number" class="pct-input" min="0" max="100" value="0" onchange="updPct(&#39;ab3&#39;,this.value)">
+          <span class="pct-sym">%</span>
+        </div>
+        <div class="prog-bar-bg"><div class="prog-bar-fill" style="width:0%;background:#E24B4A"></div></div>
+      </div></td>
+          <td class="top"><div><input type="date" class="date-input" value="2026-08-31" onchange="updDeadline(&#39;ab3&#39;,this.value)"></div></td>
+          <td><button class="del-btn" onclick="delProj(&#39;ab&#39;,&#39;ab3&#39;)">✕</button></td>
+        </tr><tr><td colspan="7" style="padding:4px 10px;border-bottom:2px solid var(--color-border-tertiary)"><button class="add-proj-trigger" onclick="startAddProj(&#39;ab&#39;)">+ add project to Ashok Brothers</button></td></tr><tr>
+          <td class="org-cell" rowspan="7">
+            <div class="org-inner"><div class="avatar" style="background:#EEEDFE;color:#534AB7">VE</div>
+            <div><div class="org-name">Volamp Elektrikals</div><div class="org-meta">6 proj</div></div></div>
+          </td>
+          <td class="top"><div class="proj-cell"><span class="pdot biz"></span><div><span class="ptext">Two days/week for client meetings</span><br><span class="type-chip" style="background:#E6F1FB;color:#0C447C">Biz</span></div></div></td>
+          <td class="top"><div class="impact-wrap" id="iw-ve1" onclick="editImpact(&#39;ve1&#39;)"><div class="impact-val">Deepens client relationships</div><textarea class="impact-edit" id="ie-ve1" rows="2" onblur="saveImpact(&#39;ve1&#39;)">Deepens client relationships</textarea></div></td>
+          <td class="top"><div class="act-list"><div class="act-row"><span class="act-arrow">↳</span><span class="act-text">5 visits/week — 50 total Q1 FY27</span><button class="act-del" onclick="delAction(&#39;ve1&#39;,&#39;vea1&#39;)">✕</button></div><div class="act-row"><span class="act-arrow">↳</span><span class="act-text">Prepare list of 50 clients</span><button class="act-del" onclick="delAction(&#39;ve1&#39;,&#39;vea2&#39;)">✕</button></div></div><button class="add-act-btn" onclick="startAddAct(&#39;ve1&#39;)">+ action</button></td>
+          <td><select class="status-sel" onchange="updStatus(&#39;ve1&#39;,this.value)" style="background:#E6F1FB;color:#185FA5;border-color:#185FA544"><option>Not started</option><option selected="">In progress</option><option>Done</option><option>At risk</option></select></td>
+          <td><div class="prog-wrap">
+        <div class="prog-input-row">
+          <div class="tl-dot" style="background:#E24B4A"></div>
+          <input type="number" class="pct-input" min="0" max="100" value="30" onchange="updPct(&#39;ve1&#39;,this.value)">
+          <span class="pct-sym">%</span>
+        </div>
+        <div class="prog-bar-bg"><div class="prog-bar-fill" style="width:30%;background:#E24B4A"></div></div>
+      </div></td>
+          <td class="top"><div><input type="date" class="date-input" value="2026-06-30" onchange="updDeadline(&#39;ve1&#39;,this.value)"></div></td>
+          <td><button class="del-btn" onclick="delProj(&#39;ve&#39;,&#39;ve1&#39;)">✕</button></td>
+        </tr><tr>
+          <td class="top"><div class="proj-cell"><span class="pdot biz"></span><div><span class="ptext">SWG sales: ₹15L Apr, ₹65L May, ₹65L Jun</span><br><span class="type-chip" style="background:#E6F1FB;color:#0C447C">Biz</span></div></div></td>
+          <td class="top"><div class="impact-wrap" id="iw-ve2" onclick="editImpact(&#39;ve2&#39;)"><div class="impact-val">₹1.45cr Q1 revenue target</div><textarea class="impact-edit" id="ie-ve2" rows="2" onblur="saveImpact(&#39;ve2&#39;)">₹1.45cr Q1 revenue target</textarea></div></td>
+          <td class="top"><div class="act-list"></div><button class="add-act-btn" onclick="startAddAct(&#39;ve2&#39;)">+ action</button></td>
+          <td><select class="status-sel" onchange="updStatus(&#39;ve2&#39;,this.value)" style="background:#E6F1FB;color:#185FA5;border-color:#185FA544"><option>Not started</option><option selected="">In progress</option><option>Done</option><option>At risk</option></select></td>
+          <td><div class="prog-wrap">
+        <div class="prog-input-row">
+          <div class="tl-dot" style="background:#E24B4A"></div>
+          <input type="number" class="pct-input" min="0" max="100" value="20" onchange="updPct(&#39;ve2&#39;,this.value)">
+          <span class="pct-sym">%</span>
+        </div>
+        <div class="prog-bar-bg"><div class="prog-bar-fill" style="width:20%;background:#E24B4A"></div></div>
+      </div></td>
+          <td class="top"><div><input type="date" class="date-input" value="2026-06-30" onchange="updDeadline(&#39;ve2&#39;,this.value)"></div></td>
+          <td><button class="del-btn" onclick="delProj(&#39;ve&#39;,&#39;ve2&#39;)">✕</button></td>
+        </tr><tr>
+          <td class="top"><div class="proj-cell"><span class="pdot biz"></span><div><span class="ptext">50 client visits in Q1 FY27</span><br><span class="type-chip" style="background:#E6F1FB;color:#0C447C">Biz</span></div></div></td>
+          <td class="top"><div class="impact-wrap" id="iw-ve3" onclick="editImpact(&#39;ve3&#39;)"><div class="impact-val">Expands active customer base</div><textarea class="impact-edit" id="ie-ve3" rows="2" onblur="saveImpact(&#39;ve3&#39;)">Expands active customer base</textarea></div></td>
+          <td class="top"><div class="act-list"></div><button class="add-act-btn" onclick="startAddAct(&#39;ve3&#39;)">+ action</button></td>
+          <td><select class="status-sel" onchange="updStatus(&#39;ve3&#39;,this.value)" style="background:#E6F1FB;color:#185FA5;border-color:#185FA544"><option>Not started</option><option selected="">In progress</option><option>Done</option><option>At risk</option></select></td>
+          <td><div class="prog-wrap">
+        <div class="prog-input-row">
+          <div class="tl-dot" style="background:#E24B4A"></div>
+          <input type="number" class="pct-input" min="0" max="100" value="25" onchange="updPct(&#39;ve3&#39;,this.value)">
+          <span class="pct-sym">%</span>
+        </div>
+        <div class="prog-bar-bg"><div class="prog-bar-fill" style="width:25%;background:#E24B4A"></div></div>
+      </div></td>
+          <td class="top"><div><input type="date" class="date-input" value="2026-06-30" onchange="updDeadline(&#39;ve3&#39;,this.value)"></div></td>
+          <td><button class="del-btn" onclick="delProj(&#39;ve&#39;,&#39;ve3&#39;)">✕</button></td>
+        </tr><tr>
+          <td class="top"><div class="proj-cell"><span class="pdot biz"></span><div><span class="ptext">Own branding in LT wire — ₹3cr FY27</span><br><span class="type-chip" style="background:#E6F1FB;color:#0C447C">Biz</span></div></div></td>
+          <td class="top"><div class="impact-wrap" id="iw-ve4" onclick="editImpact(&#39;ve4&#39;)"><div class="impact-val">Higher margins via own brand</div><textarea class="impact-edit" id="ie-ve4" rows="2" onblur="saveImpact(&#39;ve4&#39;)">Higher margins via own brand</textarea></div></td>
+          <td class="top"><div class="act-list"></div><button class="add-act-btn" onclick="startAddAct(&#39;ve4&#39;)">+ action</button></td>
+          <td><select class="status-sel" onchange="updStatus(&#39;ve4&#39;,this.value)" style="background:#F1EFE8;color:#888780;border-color:#88878044"><option selected="">Not started</option><option>In progress</option><option>Done</option><option>At risk</option></select></td>
+          <td><div class="prog-wrap">
+        <div class="prog-input-row">
+          <div class="tl-dot" style="background:#E24B4A"></div>
+          <input type="number" class="pct-input" min="0" max="100" value="0" onchange="updPct(&#39;ve4&#39;,this.value)">
+          <span class="pct-sym">%</span>
+        </div>
+        <div class="prog-bar-bg"><div class="prog-bar-fill" style="width:0%;background:#E24B4A"></div></div>
+      </div></td>
+          <td class="top"><div><input type="date" class="date-input" value="2027-03-31" onchange="updDeadline(&#39;ve4&#39;,this.value)"></div></td>
+          <td><button class="del-btn" onclick="delProj(&#39;ve&#39;,&#39;ve4&#39;)">✕</button></td>
+        </tr><tr>
+          <td class="top"><div class="proj-cell"><span class="pdot biz"></span><div><span class="ptext">Branding assets + soft launch 4th July 2026</span><br><span class="type-chip" style="background:#E6F1FB;color:#0C447C">Biz</span></div></div></td>
+          <td class="top"><div class="impact-wrap" id="iw-ve5" onclick="editImpact(&#39;ve5&#39;)"><div class="impact-val">Market presence established</div><textarea class="impact-edit" id="ie-ve5" rows="2" onblur="saveImpact(&#39;ve5&#39;)">Market presence established</textarea></div></td>
+          <td class="top"><div class="act-list"></div><button class="add-act-btn" onclick="startAddAct(&#39;ve5&#39;)">+ action</button></td>
+          <td><select class="status-sel" onchange="updStatus(&#39;ve5&#39;,this.value)" style="background:#F1EFE8;color:#888780;border-color:#88878044"><option selected="">Not started</option><option>In progress</option><option>Done</option><option>At risk</option></select></td>
+          <td><div class="prog-wrap">
+        <div class="prog-input-row">
+          <div class="tl-dot" style="background:#E24B4A"></div>
+          <input type="number" class="pct-input" min="0" max="100" value="0" onchange="updPct(&#39;ve5&#39;,this.value)">
+          <span class="pct-sym">%</span>
+        </div>
+        <div class="prog-bar-bg"><div class="prog-bar-fill" style="width:0%;background:#E24B4A"></div></div>
+      </div></td>
+          <td class="top"><div><input type="date" class="date-input" value="2026-07-04" onchange="updDeadline(&#39;ve5&#39;,this.value)"></div></td>
+          <td><button class="del-btn" onclick="delProj(&#39;ve&#39;,&#39;ve5&#39;)">✕</button></td>
+        </tr><tr>
+          <td class="top"><div class="proj-cell"><span class="pdot biz"></span><div><span class="ptext">₹4L advertising + ₹5L schemes</span><br><span class="type-chip" style="background:#E6F1FB;color:#0C447C">Biz</span></div></div></td>
+          <td class="top"><div class="impact-wrap" id="iw-ve6" onclick="editImpact(&#39;ve6&#39;)"><div class="impact-val">Brand pull &amp; dealer activation</div><textarea class="impact-edit" id="ie-ve6" rows="2" onblur="saveImpact(&#39;ve6&#39;)">Brand pull &amp; dealer activation</textarea></div></td>
+          <td class="top"><div class="act-list"></div><button class="add-act-btn" onclick="startAddAct(&#39;ve6&#39;)">+ action</button></td>
+          <td><select class="status-sel" onchange="updStatus(&#39;ve6&#39;,this.value)" style="background:#F1EFE8;color:#888780;border-color:#88878044"><option selected="">Not started</option><option>In progress</option><option>Done</option><option>At risk</option></select></td>
+          <td><div class="prog-wrap">
+        <div class="prog-input-row">
+          <div class="tl-dot" style="background:#E24B4A"></div>
+          <input type="number" class="pct-input" min="0" max="100" value="0" onchange="updPct(&#39;ve6&#39;,this.value)">
+          <span class="pct-sym">%</span>
+        </div>
+        <div class="prog-bar-bg"><div class="prog-bar-fill" style="width:0%;background:#E24B4A"></div></div>
+      </div></td>
+          <td class="top"><div><input type="date" class="date-input" value="2027-03-31" onchange="updDeadline(&#39;ve6&#39;,this.value)"></div></td>
+          <td><button class="del-btn" onclick="delProj(&#39;ve&#39;,&#39;ve6&#39;)">✕</button></td>
+        </tr><tr><td colspan="7" style="padding:4px 10px;border-bottom:2px solid var(--color-border-tertiary)"><button class="add-proj-trigger" onclick="startAddProj(&#39;ve&#39;)">+ add project to Volamp Elektrikals</button></td></tr><tr>
+          <td class="org-cell" rowspan="10">
+            <div class="org-inner"><div class="avatar" style="background:#F1EFE8;color:#5F5E5A">NW</div>
+            <div><div class="org-name">Network</div><div class="org-meta">9 proj</div></div></div>
+          </td>
+          <td class="top"><div class="proj-cell"><span class="pdot biz"></span><div><span class="ptext">Team building</span><br><span class="type-chip" style="background:#E6F1FB;color:#0C447C">Biz</span></div></div></td>
+          <td class="top"><div class="impact-wrap" id="iw-nw1" onclick="editImpact(&#39;nw1&#39;)"><div class="impact-val">Org capacity &amp; capability</div><textarea class="impact-edit" id="ie-nw1" rows="2" onblur="saveImpact(&#39;nw1&#39;)">Org capacity &amp; capability</textarea></div></td>
+          <td class="top"><div class="act-list"><div class="act-row"><span class="act-arrow">↳</span><span class="act-text">JD made, agency onboarding started</span><button class="act-del" onclick="delAction(&#39;nw1&#39;,&#39;nwa1&#39;)">✕</button></div></div><button class="add-act-btn" onclick="startAddAct(&#39;nw1&#39;)">+ action</button></td>
+          <td><select class="status-sel" onchange="updStatus(&#39;nw1&#39;,this.value)" style="background:#E6F1FB;color:#185FA5;border-color:#185FA544"><option>Not started</option><option selected="">In progress</option><option>Done</option><option>At risk</option></select></td>
+          <td><div class="prog-wrap">
+        <div class="prog-input-row">
+          <div class="tl-dot" style="background:#BA7517"></div>
+          <input type="number" class="pct-input" min="0" max="100" value="50" onchange="updPct(&#39;nw1&#39;,this.value)">
+          <span class="pct-sym">%</span>
+        </div>
+        <div class="prog-bar-bg"><div class="prog-bar-fill" style="width:50%;background:#BA7517"></div></div>
+      </div></td>
+          <td class="top"><div><input type="date" class="date-input" value="2026-09-30" onchange="updDeadline(&#39;nw1&#39;,this.value)"></div></td>
+          <td><button class="del-btn" onclick="delProj(&#39;nw&#39;,&#39;nw1&#39;)">✕</button></td>
+        </tr><tr>
+          <td class="top"><div class="proj-cell"><span class="pdot biz"></span><div><span class="ptext">Infra — office renewal, warehouse</span><br><span class="type-chip" style="background:#E6F1FB;color:#0C447C">Biz</span></div></div></td>
+          <td class="top"><div class="impact-wrap" id="iw-nw2" onclick="editImpact(&#39;nw2&#39;)"><div class="impact-val">Stable operational base</div><textarea class="impact-edit" id="ie-nw2" rows="2" onblur="saveImpact(&#39;nw2&#39;)">Stable operational base</textarea></div></td>
+          <td class="top"><div class="act-list"><div class="act-row"><span class="act-arrow">↳</span><span class="act-text">Plan made with design engineer</span><button class="act-del" onclick="delAction(&#39;nw2&#39;,&#39;nwa2&#39;)">✕</button></div></div><button class="add-act-btn" onclick="startAddAct(&#39;nw2&#39;)">+ action</button></td>
+          <td><select class="status-sel" onchange="updStatus(&#39;nw2&#39;,this.value)" style="background:#E6F1FB;color:#185FA5;border-color:#185FA544"><option>Not started</option><option selected="">In progress</option><option>Done</option><option>At risk</option></select></td>
+          <td><div class="prog-wrap">
+        <div class="prog-input-row">
+          <div class="tl-dot" style="background:#BA7517"></div>
+          <input type="number" class="pct-input" min="0" max="100" value="40" onchange="updPct(&#39;nw2&#39;,this.value)">
+          <span class="pct-sym">%</span>
+        </div>
+        <div class="prog-bar-bg"><div class="prog-bar-fill" style="width:40%;background:#BA7517"></div></div>
+      </div></td>
+          <td class="top"><div><input type="date" class="date-input" value="2026-08-31" onchange="updDeadline(&#39;nw2&#39;,this.value)"></div></td>
+          <td><button class="del-btn" onclick="delProj(&#39;nw&#39;,&#39;nw2&#39;)">✕</button></td>
+        </tr><tr>
+          <td class="top"><div class="proj-cell"><span class="pdot biz"></span><div><span class="ptext">Process &amp; SOP</span><br><span class="type-chip" style="background:#E6F1FB;color:#0C447C">Biz</span></div></div></td>
+          <td class="top"><div class="impact-wrap" id="iw-nw3" onclick="editImpact(&#39;nw3&#39;)"><div class="impact-val">Consistency &amp; scalability</div><textarea class="impact-edit" id="ie-nw3" rows="2" onblur="saveImpact(&#39;nw3&#39;)">Consistency &amp; scalability</textarea></div></td>
+          <td class="top"><div class="act-list"><div class="act-row"><span class="act-arrow">↳</span><span class="act-text">Purchase process mapping — ERP</span><button class="act-del" onclick="delAction(&#39;nw3&#39;,&#39;nwa3&#39;)">✕</button></div></div><button class="add-act-btn" onclick="startAddAct(&#39;nw3&#39;)">+ action</button></td>
+          <td><select class="status-sel" onchange="updStatus(&#39;nw3&#39;,this.value)" style="background:#E6F1FB;color:#185FA5;border-color:#185FA544"><option>Not started</option><option selected="">In progress</option><option>Done</option><option>At risk</option></select></td>
+          <td><div class="prog-wrap">
+        <div class="prog-input-row">
+          <div class="tl-dot" style="background:#BA7517"></div>
+          <input type="number" class="pct-input" min="0" max="100" value="35" onchange="updPct(&#39;nw3&#39;,this.value)">
+          <span class="pct-sym">%</span>
+        </div>
+        <div class="prog-bar-bg"><div class="prog-bar-fill" style="width:35%;background:#BA7517"></div></div>
+      </div></td>
+          <td class="top"><div><input type="date" class="date-input" value="2026-07-31" onchange="updDeadline(&#39;nw3&#39;,this.value)"></div></td>
+          <td><button class="del-btn" onclick="delProj(&#39;nw&#39;,&#39;nw3&#39;)">✕</button></td>
+        </tr><tr>
+          <td class="top"><div class="proj-cell"><span class="pdot biz"></span><div><span class="ptext">Malaysia Visit</span><br><span class="type-chip" style="background:#E6F1FB;color:#0C447C">Biz</span></div></div></td>
+          <td class="top"><div class="impact-wrap" id="iw-nw4" onclick="editImpact(&#39;nw4&#39;)"><div class="impact-val">International sourcing &amp; partnership</div><textarea class="impact-edit" id="ie-nw4" rows="2" onblur="saveImpact(&#39;nw4&#39;)">International sourcing &amp; partnership</textarea></div></td>
+          <td class="top"><div class="act-list"><div class="act-row"><span class="act-arrow">↳</span><span class="act-text">Sampling done, visit not yet done</span><button class="act-del" onclick="delAction(&#39;nw4&#39;,&#39;nwa4&#39;)">✕</button></div></div><button class="add-act-btn" onclick="startAddAct(&#39;nw4&#39;)">+ action</button></td>
+          <td><select class="status-sel" onchange="updStatus(&#39;nw4&#39;,this.value)" style="background:#E6F1FB;color:#185FA5;border-color:#185FA544"><option>Not started</option><option selected="">In progress</option><option>Done</option><option>At risk</option></select></td>
+          <td><div class="prog-wrap">
+        <div class="prog-input-row">
+          <div class="tl-dot" style="background:#E24B4A"></div>
+          <input type="number" class="pct-input" min="0" max="100" value="20" onchange="updPct(&#39;nw4&#39;,this.value)">
+          <span class="pct-sym">%</span>
+        </div>
+        <div class="prog-bar-bg"><div class="prog-bar-fill" style="width:20%;background:#E24B4A"></div></div>
+      </div></td>
+          <td class="top"><div><input type="date" class="date-input" value="2026-06-30" onchange="updDeadline(&#39;nw4&#39;,this.value)"></div></td>
+          <td><button class="del-btn" onclick="delProj(&#39;nw&#39;,&#39;nw4&#39;)">✕</button></td>
+        </tr><tr>
+          <td class="top"><div class="proj-cell"><span class="pdot pers"></span><div><span class="ptext">Self health</span><br><span class="type-chip" style="background:#EAF3DE;color:#27500A">Personal</span></div></div></td>
+          <td class="top"><div class="impact-wrap" id="iw-nw5" onclick="editImpact(&#39;nw5&#39;)"><div class="impact-val">Sustained leadership energy</div><textarea class="impact-edit" id="ie-nw5" rows="2" onblur="saveImpact(&#39;nw5&#39;)">Sustained leadership energy</textarea></div></td>
+          <td class="top"><div class="act-list"></div><button class="add-act-btn" onclick="startAddAct(&#39;nw5&#39;)">+ action</button></td>
+          <td><select class="status-sel" onchange="updStatus(&#39;nw5&#39;,this.value)" style="background:#E6F1FB;color:#185FA5;border-color:#185FA544"><option>Not started</option><option selected="">In progress</option><option>Done</option><option>At risk</option></select></td>
+          <td><div class="prog-wrap">
+        <div class="prog-input-row">
+          <div class="tl-dot" style="background:#BA7517"></div>
+          <input type="number" class="pct-input" min="0" max="100" value="40" onchange="updPct(&#39;nw5&#39;,this.value)">
+          <span class="pct-sym">%</span>
+        </div>
+        <div class="prog-bar-bg"><div class="prog-bar-fill" style="width:40%;background:#BA7517"></div></div>
+      </div></td>
+          <td class="top"><div><input type="date" class="date-input" value="" onchange="updDeadline(&#39;nw5&#39;,this.value)"></div></td>
+          <td><button class="del-btn" onclick="delProj(&#39;nw&#39;,&#39;nw5&#39;)">✕</button></td>
+        </tr><tr>
+          <td class="top"><div class="proj-cell"><span class="pdot pers"></span><div><span class="ptext">Son in law</span><br><span class="type-chip" style="background:#EAF3DE;color:#27500A">Personal</span></div></div></td>
+          <td class="top"><div class="impact-wrap" id="iw-nw6" onclick="editImpact(&#39;nw6&#39;)"><div class="impact-val">Family stability</div><textarea class="impact-edit" id="ie-nw6" rows="2" onblur="saveImpact(&#39;nw6&#39;)">Family stability</textarea></div></td>
+          <td class="top"><div class="act-list"></div><div class="act-add-form"><input class="act-add-input" id="aai-nw6" placeholder="Add action…"><button class="act-ok" onclick="confirmAddAct(&#39;nw6&#39;)">Add</button><button class="act-cancel" onclick="cancelAddAct(&#39;nw6&#39;)">✕</button></div></td>
+          <td><select class="status-sel" onchange="updStatus(&#39;nw6&#39;,this.value)" style="background:#F1EFE8;color:#888780;border-color:#88878044"><option selected="">Not started</option><option>In progress</option><option>Done</option><option>At risk</option></select></td>
+          <td><div class="prog-wrap">
+        <div class="prog-input-row">
+          <div class="tl-dot" style="background:#E24B4A"></div>
+          <input type="number" class="pct-input" min="0" max="100" value="0" onchange="updPct(&#39;nw6&#39;,this.value)">
+          <span class="pct-sym">%</span>
+        </div>
+        <div class="prog-bar-bg"><div class="prog-bar-fill" style="width:0%;background:#E24B4A"></div></div>
+      </div></td>
+          <td class="top"><div><input type="date" class="date-input" value="" onchange="updDeadline(&#39;nw6&#39;,this.value)"></div></td>
+          <td><button class="del-btn" onclick="delProj(&#39;nw&#39;,&#39;nw6&#39;)">✕</button></td>
+        </tr><tr>
+          <td class="top"><div class="proj-cell"><span class="pdot pers"></span><div><span class="ptext">New home</span><br><span class="type-chip" style="background:#EAF3DE;color:#27500A">Personal</span></div></div></td>
+          <td class="top"><div class="impact-wrap" id="iw-nw7" onclick="editImpact(&#39;nw7&#39;)"><div class="impact-val">Personal milestone</div><textarea class="impact-edit" id="ie-nw7" rows="2" onblur="saveImpact(&#39;nw7&#39;)">Personal milestone</textarea></div></td>
+          <td class="top"><div class="act-list"></div><button class="add-act-btn" onclick="startAddAct(&#39;nw7&#39;)">+ action</button></td>
+          <td><select class="status-sel" onchange="updStatus(&#39;nw7&#39;,this.value)" style="background:#F1EFE8;color:#888780;border-color:#88878044"><option selected="">Not started</option><option>In progress</option><option>Done</option><option>At risk</option></select></td>
+          <td><div class="prog-wrap">
+        <div class="prog-input-row">
+          <div class="tl-dot" style="background:#E24B4A"></div>
+          <input type="number" class="pct-input" min="0" max="100" value="0" onchange="updPct(&#39;nw7&#39;,this.value)">
+          <span class="pct-sym">%</span>
+        </div>
+        <div class="prog-bar-bg"><div class="prog-bar-fill" style="width:0%;background:#E24B4A"></div></div>
+      </div></td>
+          <td class="top"><div><input type="date" class="date-input" value="" onchange="updDeadline(&#39;nw7&#39;,this.value)"></div></td>
+          <td><button class="del-btn" onclick="delProj(&#39;nw&#39;,&#39;nw7&#39;)">✕</button></td>
+        </tr><tr>
+          <td class="top"><div class="proj-cell"><span class="pdot pers"></span><div><span class="ptext">Not more than 5hrs working</span><br><span class="type-chip" style="background:#EAF3DE;color:#27500A">Personal</span></div></div></td>
+          <td class="top"><div class="impact-wrap" id="iw-nw8" onclick="editImpact(&#39;nw8&#39;)"><div class="impact-val">Work-life balance</div><textarea class="impact-edit" id="ie-nw8" rows="2" onblur="saveImpact(&#39;nw8&#39;)">Work-life balance</textarea></div></td>
+          <td class="top"><div class="act-list"></div><button class="add-act-btn" onclick="startAddAct(&#39;nw8&#39;)">+ action</button></td>
+          <td><select class="status-sel" onchange="updStatus(&#39;nw8&#39;,this.value)" style="background:#E6F1FB;color:#185FA5;border-color:#185FA544"><option>Not started</option><option selected="">In progress</option><option>Done</option><option>At risk</option></select></td>
+          <td><div class="prog-wrap">
+        <div class="prog-input-row">
+          <div class="tl-dot" style="background:#BA7517"></div>
+          <input type="number" class="pct-input" min="0" max="100" value="40" onchange="updPct(&#39;nw8&#39;,this.value)">
+          <span class="pct-sym">%</span>
+        </div>
+        <div class="prog-bar-bg"><div class="prog-bar-fill" style="width:40%;background:#BA7517"></div></div>
+      </div></td>
+          <td class="top"><div><input type="date" class="date-input" value="" onchange="updDeadline(&#39;nw8&#39;,this.value)"></div></td>
+          <td><button class="del-btn" onclick="delProj(&#39;nw&#39;,&#39;nw8&#39;)">✕</button></td>
+        </tr><tr>
+          <td class="top"><div class="proj-cell"><span class="pdot pers"></span><div><span class="ptext">Weight loss from 94kg to 91kg</span><br><span class="type-chip" style="background:#EAF3DE;color:#27500A">Personal</span></div></div></td>
+          <td class="top"><div class="impact-wrap" id="iw-nw9" onclick="editImpact(&#39;nw9&#39;)"><div class="impact-val">Health &amp; energy</div><textarea class="impact-edit" id="ie-nw9" rows="2" onblur="saveImpact(&#39;nw9&#39;)">Health &amp; energy</textarea></div></td>
+          <td class="top"><div class="act-list"></div><button class="add-act-btn" onclick="startAddAct(&#39;nw9&#39;)">+ action</button></td>
+          <td><select class="status-sel" onchange="updStatus(&#39;nw9&#39;,this.value)" style="background:#E6F1FB;color:#185FA5;border-color:#185FA544"><option>Not started</option><option selected="">In progress</option><option>Done</option><option>At risk</option></select></td>
+          <td><div class="prog-wrap">
+        <div class="prog-input-row">
+          <div class="tl-dot" style="background:#E24B4A"></div>
+          <input type="number" class="pct-input" min="0" max="100" value="20" onchange="updPct(&#39;nw9&#39;,this.value)">
+          <span class="pct-sym">%</span>
+        </div>
+        <div class="prog-bar-bg"><div class="prog-bar-fill" style="width:20%;background:#E24B4A"></div></div>
+      </div></td>
+          <td class="top"><div><input type="date" class="date-input" value="2026-12-31" onchange="updDeadline(&#39;nw9&#39;,this.value)"></div></td>
+          <td><button class="del-btn" onclick="delProj(&#39;nw&#39;,&#39;nw9&#39;)">✕</button></td>
+        </tr><tr><td colspan="7" style="padding:4px 10px;border-bottom:2px solid var(--color-border-tertiary)"><button class="add-proj-trigger" onclick="startAddProj(&#39;nw&#39;)">+ add project to Network</button></td></tr></tbody>
+</table>
+</div>
+</div>
+
+<script src="./tbb_dashboard_v6_files/xlsx.full.min.js.download"></script>
+<script src="./tbb_dashboard_v6_files/chart.umd.js.download"></script>
+<script>
+const ST=['Not started','In progress','Done','At risk'];
+const SCOL={'Not started':'#888780','In progress':'#185FA5','Done':'#0F6E56','At risk':'#A32D2D'};
+const SBG={'Not started':'#F1EFE8','In progress':'#E6F1FB','Done':'#EAF3DE','At risk':'#FCEBEB'};
+const PC=['#D3D1C7','#378ADD','#1D9E75','#E24B4A'];
+let idC=9000,currentView='all',selectedOrg=null,pieCharts={};
+let addingProj={},addingAct={};
+const uid=()=>'x'+(idC++);
+const today=new Date();
+
+const ORGS=[
+  {id:'ss',name:'S S Rathaur',initials:'SS',bg:'#E6F1FB',fg:'#185FA5',projects:[
+    {id:'ss1',type:'business',text:'Hire a Business Analyst (BA)',tag:null,status:'Not started',impact:'',pct:0,deadline:'',actions:[]},
+    {id:'ss2',type:'business',text:'Prepare incentive plan for sales team',tag:null,status:'Not started',impact:'Boosts sales motivation & retention',pct:20,deadline:'2026-04-25',actions:[{id:'ssa1',text:"Implement incentive system by 25th Apr '26"}]},
+    {id:'ss3',type:'business',text:'Finalize KRA of Mrs. Rathaur',tag:null,status:'Not started',impact:'',pct:0,deadline:'',actions:[]},
+    {id:'ss4',type:'business',text:'Implement data management system',tag:null,status:'Not started',impact:'Streamlines AR & reporting',pct:0,deadline:'',actions:[]},
+    {id:'ss5',type:'business',text:'AR & payment collection',tag:null,status:'Not started',impact:'Improves cash flow',pct:0,deadline:'',actions:[]}
+  ]},
+  {id:'kc',name:'Kity Creations',initials:'KC',bg:'#FAEEDA',fg:'#854F0B',projects:[
+    {id:'kc1',type:'business',text:'Mission South for 30cr in a year',tag:'HP',status:'In progress',impact:'Opens new geography, 30cr revenue',pct:30,deadline:'2027-03-31',actions:[{id:'kca1',text:'Hired 1 dedicated person for South'}]},
+    {id:'kc2',type:'business',text:'Outbound Sales — HO sales from 30% to target',tag:'NP',status:'In progress',impact:'Reduces dependency on inbound',pct:45,deadline:'2027-03-31',actions:[{id:'kca2',text:'Started outbound sales script'}]},
+    {id:'kc3',type:'business',text:'Town hall plan',tag:'HP',status:'Not started',impact:'Aligns team with org vision',pct:10,deadline:'2026-05-31',actions:[{id:'kca3',text:'Planning started'}]},
+    {id:'kc4',type:'business',text:'Indowestern 1cr in Q1 FY27',tag:'NP',status:'Not started',impact:'New product category revenue',pct:15,deadline:'2026-06-30',actions:[{id:'kca4',text:'Target planning done with agents'}]},
+    {id:'kc5',type:'business',text:'Agent schemes by 1st May',tag:null,status:'Not started',impact:'Activates agent channel',pct:0,deadline:'2026-05-01',actions:[]},
+    {id:'kc6',type:'personal',text:'Follow own commitment',tag:'HP',status:'In progress',impact:'Builds leadership credibility',pct:40,deadline:'',actions:[]},
+    {id:'kc7',type:'personal',text:'Being Courageous',tag:'HP',status:'Not started',impact:'Enables bold decisions',pct:0,deadline:'',actions:[]},
+    {id:'kc8',type:'personal',text:'Commitment — Man of Words',tag:'NP',status:'Not started',impact:'Trust within team',pct:0,deadline:'',actions:[]},
+    {id:'kc9',type:'personal',text:'Good Listener — Respond, not react',tag:'NP',status:'Not started',impact:'Better team relationships',pct:0,deadline:'',actions:[]}
+  ]},
+  {id:'jc',name:'Jiyaa Comfort',initials:'JC',bg:'#FBEAF0',fg:'#993556',projects:[
+    {id:'jc1',type:'business',text:'10 performance reviews per salesperson FY27',tag:null,status:'Not started',impact:'Improves sales team output',pct:0,deadline:'2027-03-31',actions:[]},
+    {id:'jc2',type:'business',text:'Prepare target & incentive plans for sales',tag:null,status:'Not started',impact:'Drives goal clarity & motivation',pct:0,deadline:'2026-06-30',actions:[]},
+    {id:'jc3',type:'personal',text:'Create and streamline a wealth portfolio',tag:null,status:'Not started',impact:'Financial security & growth',pct:0,deadline:'',actions:[]}
+  ]},
+  {id:'ar',name:'Aryaanya',initials:'AR',bg:'#EAF3DE',fg:'#3B6D11',projects:[
+    {id:'ar1',type:'business',text:'Team growth & sales growth ratio',tag:null,status:'Not started',impact:'Scalable sales structure',pct:0,deadline:'2027-03-31',actions:[]},
+    {id:'ar2',type:'business',text:'2nd Saturday — Internal board award',tag:null,status:'Not started',impact:'Boosts team morale & recognition',pct:0,deadline:'',actions:[]},
+    {id:'ar3',type:'business',text:'4th Saturday — Cricket Carnival',tag:null,status:'Not started',impact:'Team bonding & culture',pct:0,deadline:'',actions:[]},
+    {id:'ar4',type:'business',text:'Interior — Turnkey Projects onboard',tag:null,status:'Not started',impact:'New revenue stream',pct:0,deadline:'2026-09-30',actions:[]}
+  ]},
+  {id:'ab',name:'Ashok Brothers',initials:'AB',bg:'#E1F5EE',fg:'#0F6E56',projects:[
+    {id:'ab1',type:'business',text:'Packaging machine — Lr. Sarvesh',tag:null,status:'Not started',impact:'Reduces packaging cost & time',pct:0,deadline:'2026-07-31',actions:[]},
+    {id:'ab2',type:'business',text:'L2 — 3 positions to fill',tag:null,status:'Not started',impact:'Builds second-line leadership',pct:0,deadline:'2026-06-30',actions:[]},
+    {id:'ab3',type:'business',text:'Customer segmentation',tag:null,status:'Not started',impact:'Targeted sales & better margins',pct:0,deadline:'2026-08-31',actions:[]}
+  ]},
+  {id:'ve',name:'Volamp Elektrikals',initials:'VE',bg:'#EEEDFE',fg:'#534AB7',projects:[
+    {id:'ve1',type:'business',text:'Two days/week for client meetings',tag:null,status:'In progress',impact:'Deepens client relationships',pct:30,deadline:'2026-06-30',actions:[{id:'vea1',text:'5 visits/week — 50 total Q1 FY27'},{id:'vea2',text:'Prepare list of 50 clients'}]},
+    {id:'ve2',type:'business',text:'SWG sales: ₹15L Apr, ₹65L May, ₹65L Jun',tag:null,status:'In progress',impact:'₹1.45cr Q1 revenue target',pct:20,deadline:'2026-06-30',actions:[]},
+    {id:'ve3',type:'business',text:'50 client visits in Q1 FY27',tag:null,status:'In progress',impact:'Expands active customer base',pct:25,deadline:'2026-06-30',actions:[]},
+    {id:'ve4',type:'business',text:'Own branding in LT wire — ₹3cr FY27',tag:null,status:'Not started',impact:'Higher margins via own brand',pct:0,deadline:'2027-03-31',actions:[]},
+    {id:'ve5',type:'business',text:'Branding assets + soft launch 4th July 2026',tag:null,status:'Not started',impact:'Market presence established',pct:0,deadline:'2026-07-04',actions:[]},
+    {id:'ve6',type:'business',text:'₹4L advertising + ₹5L schemes',tag:null,status:'Not started',impact:'Brand pull & dealer activation',pct:0,deadline:'2027-03-31',actions:[]}
+  ]},
+  {id:'nw',name:'Network',initials:'NW',bg:'#F1EFE8',fg:'#5F5E5A',projects:[
+    {id:'nw1',type:'business',text:'Team building',tag:null,status:'In progress',impact:'Org capacity & capability',pct:50,deadline:'2026-09-30',actions:[{id:'nwa1',text:'JD made, agency onboarding started'}]},
+    {id:'nw2',type:'business',text:'Infra — office renewal, warehouse',tag:null,status:'In progress',impact:'Stable operational base',pct:40,deadline:'2026-08-31',actions:[{id:'nwa2',text:'Plan made with design engineer'}]},
+    {id:'nw3',type:'business',text:'Process & SOP',tag:null,status:'In progress',impact:'Consistency & scalability',pct:35,deadline:'2026-07-31',actions:[{id:'nwa3',text:'Purchase process mapping — ERP'}]},
+    {id:'nw4',type:'business',text:'Malaysia Visit',tag:null,status:'At risk',impact:'International sourcing & partnership',pct:20,deadline:'2026-06-30',actions:[{id:'nwa4',text:'Sampling done, visit not yet done'}]},
+    {id:'nw5',type:'personal',text:'Self health',tag:null,status:'In progress',impact:'Sustained leadership energy',pct:30,deadline:'',actions:[]},
+    {id:'nw6',type:'personal',text:'Son in law',tag:null,status:'Not started',impact:'Family stability',pct:0,deadline:'',actions:[]},
+    {id:'nw7',type:'personal',text:'New home',tag:null,status:'Not started',impact:'Personal milestone',pct:0,deadline:'',actions:[]},
+    {id:'nw8',type:'personal',text:'Not more than 5hrs working',tag:null,status:'In progress',impact:'Work-life balance',pct:50,deadline:'',actions:[]},
+    {id:'nw9',type:'personal',text:'Weight loss from 94kg to 91kg',tag:null,status:'In progress',impact:'Health & energy',pct:20,deadline:'2026-12-31',actions:[]}
+  ]}
+];
+
+function filterProjs(org){
+  let p=org.projects;
+  if(selectedOrg&&org.id!==selectedOrg) return [];
+  if(currentView==='business') p=p.filter(x=>x.type==='business');
+  else if(currentView==='personal') p=p.filter(x=>x.type==='personal');
+  else if(currentView==='at-risk') p=p.filter(x=>x.status==='At risk');
+  return p;
+}
+function badge(tag){return tag?`<span class="badge badge-${tag.toLowerCase()}">${tag}</span>`:'';}
+function tlColor(p){return p>=70?'#1D9E75':p>=35?'#BA7517':'#E24B4A';}
+function deadlineNote(dl){
+  if(!dl) return '';
+  const d=new Date(dl),diff=Math.ceil((d-today)/(1000*60*60*24));
+  if(diff<0) return `<div class="deadline-over">Overdue by ${Math.abs(diff)}d</div>`;
+  if(diff<=14) return `<div class="deadline-soon">Due in ${diff}d</div>`;
+  return '';
+}
+function fmtDate(dl){
+  if(!dl) return '';
+  const [y,m,d]=dl.split('-');
+  return `${d}/${m}/${y.slice(2)}`;
+}
+
+function renderSummary(){
+  const ap=ORGS.flatMap(o=>o.projects);
+  const done=ap.filter(p=>p.status==='Done').length;
+  const ip=ap.filter(p=>p.status==='In progress').length;
+  const risk=ap.filter(p=>p.status==='At risk').length;
+  const op=ap.length?Math.round(done/ap.length*100):0;
+  document.getElementById('summaryStrip').innerHTML=`
+    <div class="sc"><div class="sc-val">${ORGS.length}</div><div class="sc-lbl">Orgs</div></div>
+    <div class="sc"><div class="sc-val">${ap.length}</div><div class="sc-lbl">Projects</div></div>
+    <div class="sc"><div class="sc-val" style="color:#0F6E56">${done}</div><div class="sc-lbl">Done (${op}%)</div></div>
+    <div class="sc"><div class="sc-val" style="color:#185FA5">${ip}</div><div class="sc-lbl">In progress</div></div>
+    <div class="sc"><div class="sc-val" style="color:#A32D2D">${risk}</div><div class="sc-lbl">At risk</div></div>`;
+}
+
+function renderPies(){
+  Object.values(pieCharts).forEach(c=>{try{c.destroy();}catch(e){}});
+  pieCharts={};
+  document.getElementById('pieGrid').innerHTML=ORGS.map(org=>`
+    <div class="pie-card${selectedOrg===org.id?' active':''}" id="pc-${org.id}" onclick="toggleOrgFilter('${org.id}')">
+      <div class="pie-canvas-wrap"><canvas id="pie-${org.id}" width="110" height="110" role="img" aria-label="Status breakdown for ${org.name}"></canvas></div>
+      <div class="pie-org-label">${org.name}</div>
+      <div class="pie-org-sub">${org.projects.length} projects</div>
+    </div>`).join('');
+
+  ORGS.forEach(org=>{
+    const counts=ST.map(s=>org.projects.filter(p=>p.status===s).length);
+    const ctx=document.getElementById('pie-'+org.id);if(!ctx)return;
+    const total=counts.reduce((a,b)=>a+b,0);
+    pieCharts[org.id]=new Chart(ctx,{
+      type:'doughnut',
+      data:{labels:ST,datasets:[{data:counts,backgroundColor:PC,borderWidth:1.5,borderColor:'#ffffff'}]},
+      options:{responsive:false,maintainAspectRatio:false,cutout:'52%',
+        plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.label}: ${c.raw} (${total?Math.round(c.raw/total*100):0}%)`}}},
+        animation:{duration:300}},
+      plugins:[{id:'ct',afterDraw(chart){
+        const {ctx,chartArea:{left,right,top,bottom}}=chart;
+        const cx=(left+right)/2,cy=(top+bottom)/2;
+        ctx.save();ctx.fillStyle=org.fg;ctx.font='bold 11px sans-serif';
+        ctx.textAlign='center';ctx.textBaseline='middle';
+        ctx.fillText(org.initials,cx,cy);ctx.restore();
+      }}]
+    });
+  });
+}
+
+function toggleOrgFilter(id){
+  selectedOrg=selectedOrg===id?null:id;
+  document.querySelectorAll('.pie-card').forEach(c=>c.classList.toggle('active',c.id==='pc-'+selectedOrg));
+  renderTable();
+}
+
+function renderTable(){
+  let html='';
+  for(const org of ORGS){
+    const projs=filterProjs(org);
+    if(!projs.length) continue;
+    const rowspan=projs.length+1;
+
+    for(let i=0;i<projs.length;i++){
+      const p=projs[i];
+      const dotCls=p.type==='business'?'biz':'pers';
+      const typeBg=p.type==='business'?'#E6F1FB':'#EAF3DE';
+      const typeFg=p.type==='business'?'#0C447C':'#27500A';
+      const col=tlColor(p.pct);
+
+      // actions — clean list, no dropdowns
+      let actHtml='<div class="act-list">';
+      for(const a of p.actions){
+        actHtml+=`<div class="act-row"><span class="act-arrow">↳</span><span class="act-text">${a.text}</span><button class="act-del" onclick="delAction('${p.id}','${a.id}')">✕</button></div>`;
+      }
+      actHtml+='</div>';
+      if(addingAct[p.id]){
+        actHtml+=`<div class="act-add-form"><input class="act-add-input" id="aai-${p.id}" placeholder="Add action…"/><button class="act-ok" onclick="confirmAddAct('${p.id}')">Add</button><button class="act-cancel" onclick="cancelAddAct('${p.id}')">✕</button></div>`;
+      } else {
+        actHtml+=`<button class="add-act-btn" onclick="startAddAct('${p.id}')">+ action</button>`;
+      }
+
+      // status dropdown — drives pie
+      const statusHtml=`<select class="status-sel" onchange="updStatus('${p.id}',this.value)" style="background:${SBG[p.status]};color:${SCOL[p.status]};border-color:${SCOL[p.status]}44">${ST.map(s=>`<option${s===p.status?' selected':''}>${s}</option>`).join('')}</select>`;
+
+      // progress — manual input
+      const progHtml=`<div class="prog-wrap">
+        <div class="prog-input-row">
+          <div class="tl-dot" style="background:${col}"></div>
+          <input type="number" class="pct-input" min="0" max="100" value="${p.pct}" onchange="updPct('${p.id}',this.value)" />
+          <span class="pct-sym">%</span>
+        </div>
+        <div class="prog-bar-bg"><div class="prog-bar-fill" style="width:${Math.min(p.pct,100)}%;background:${col}"></div></div>
+      </div>`;
+
+      // deadline
+      const dlHtml=`<div><input type="date" class="date-input" value="${p.deadline||''}" onchange="updDeadline('${p.id}',this.value)" />${deadlineNote(p.deadline)}</div>`;
+
+      if(i===0){
+        html+=`<tr>
+          <td class="org-cell" rowspan="${rowspan}">
+            <div class="org-inner"><div class="avatar" style="background:${org.bg};color:${org.fg}">${org.initials}</div>
+            <div><div class="org-name">${org.name}</div><div class="org-meta">${org.projects.length} proj</div></div></div>
+          </td>
+          <td class="top"><div class="proj-cell"><span class="pdot ${dotCls}"></span><div><span class="ptext">${p.text}${badge(p.tag)}</span><br><span class="type-chip" style="background:${typeBg};color:${typeFg}">${p.type==='business'?'Biz':'Personal'}</span></div></div></td>
+          <td class="top"><div class="impact-wrap" id="iw-${p.id}" onclick="editImpact('${p.id}')"><div class="impact-val">${p.impact||'<em style="color:var(--color-text-secondary)">Click to add…</em>'}</div><textarea class="impact-edit" id="ie-${p.id}" rows="2" onblur="saveImpact('${p.id}')">${p.impact||''}</textarea></div></td>
+          <td class="top">${actHtml}</td>
+          <td>${statusHtml}</td>
+          <td>${progHtml}</td>
+          <td class="top">${dlHtml}</td>
+          <td><button class="del-btn" onclick="delProj('${org.id}','${p.id}')">✕</button></td>
+        </tr>`;
+      } else {
+        html+=`<tr>
+          <td class="top"><div class="proj-cell"><span class="pdot ${dotCls}"></span><div><span class="ptext">${p.text}${badge(p.tag)}</span><br><span class="type-chip" style="background:${typeBg};color:${typeFg}">${p.type==='business'?'Biz':'Personal'}</span></div></div></td>
+          <td class="top"><div class="impact-wrap" id="iw-${p.id}" onclick="editImpact('${p.id}')"><div class="impact-val">${p.impact||'<em style="color:var(--color-text-secondary)">Click to add…</em>'}</div><textarea class="impact-edit" id="ie-${p.id}" rows="2" onblur="saveImpact('${p.id}')">${p.impact||''}</textarea></div></td>
+          <td class="top">${actHtml}</td>
+          <td>${statusHtml}</td>
+          <td>${progHtml}</td>
+          <td class="top">${dlHtml}</td>
+          <td><button class="del-btn" onclick="delProj('${org.id}','${p.id}')">✕</button></td>
+        </tr>`;
+      }
+    }
+    // add project row
+    if(addingProj[org.id]){
+      html+=`<tr style="background:var(--color-background-secondary)"><td colspan="7" style="padding:6px 10px"><div class="add-proj-form"><input class="ap-input" id="api-${org.id}" placeholder="Project description…"/><select class="ap-type" id="apt-${org.id}"><option value="business">Business</option><option value="personal">Personal</option></select><button class="ap-ok" onclick="confirmAddProj('${org.id}')">Add</button><button class="ap-cancel" onclick="cancelAddProj('${org.id}')">✕</button></div></td></tr>`;
+    } else {
+      html+=`<tr><td colspan="7" style="padding:4px 10px;border-bottom:2px solid var(--color-border-tertiary)"><button class="add-proj-trigger" onclick="startAddProj('${org.id}')">+ add project to ${org.name}</button></td></tr>`;
+    }
+  }
+  if(!html) html=`<tr><td colspan="8" style="padding:16px;text-align:center;color:var(--color-text-secondary);font-size:13px">No projects match this filter</td></tr>`;
+  document.getElementById('tbody').innerHTML=html;
+}
+
+function render(){renderSummary();renderPies();renderTable();}
+function setView(v,btn){currentView=v;document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');renderTable();}
+
+function updStatus(pid,val){
+  for(const o of ORGS){const p=o.projects.find(x=>x.id===pid);if(p){p.status=val;break;}}
+  renderSummary();renderPies();renderTable();
+}
+function updPct(pid,val){
+  const v=Math.min(100,Math.max(0,parseInt(val)||0));
+  for(const o of ORGS){const p=o.projects.find(x=>x.id===pid);if(p){p.pct=v;break;}}
+  renderTable();
+}
+function updDeadline(pid,val){
+  for(const o of ORGS){const p=o.projects.find(x=>x.id===pid);if(p){p.deadline=val;break;}}
+  renderTable();
+}
+function editImpact(pid){
+  const w=document.getElementById('iw-'+pid);if(!w)return;
+  w.classList.add('editing');
+  const t=document.getElementById('ie-'+pid);if(t){t.focus();t.select();}
+}
+function saveImpact(pid){
+  const t=document.getElementById('ie-'+pid);if(!t)return;
+  const val=t.value.trim();
+  for(const o of ORGS){const p=o.projects.find(x=>x.id===pid);if(p){p.impact=val;break;}}
+  const w=document.getElementById('iw-'+pid);
+  if(w){w.classList.remove('editing');w.querySelector('.impact-val').innerHTML=val||'<em style="color:var(--color-text-secondary)">Click to add…</em>';}
+}
+function delProj(oid,pid){
+  ORGS.find(o=>o.id===oid).projects=ORGS.find(o=>o.id===oid).projects.filter(p=>p.id!==pid);
+  renderSummary();renderPies();renderTable();
+}
+function delAction(pid,aid){
+  for(const o of ORGS){const p=o.projects.find(x=>x.id===pid);if(p){p.actions=p.actions.filter(a=>a.id!==aid);break;}}
+  renderTable();
+}
+function startAddProj(oid){addingProj[oid]=true;renderTable();}
+function cancelAddProj(oid){delete addingProj[oid];renderTable();}
+function confirmAddProj(oid){
+  const txt=document.getElementById('api-'+oid)?.value?.trim();
+  const typ=document.getElementById('apt-'+oid)?.value||'business';
+  if(!txt)return;
+  ORGS.find(o=>o.id===oid).projects.push({id:uid(),type:typ,text:txt,tag:null,status:'Not started',impact:'',pct:0,deadline:'',actions:[]});
+  delete addingProj[oid];renderSummary();renderPies();renderTable();
+}
+function startAddAct(pid){addingAct[pid]=true;renderTable();}
+function cancelAddAct(pid){delete addingAct[pid];renderTable();}
+function confirmAddAct(pid){
+  const txt=document.getElementById('aai-'+pid)?.value?.trim();if(!txt)return;
+  for(const o of ORGS){const p=o.projects.find(x=>x.id===pid);if(p){p.actions.push({id:uid(),text:txt});break;}}
+  delete addingAct[pid];renderTable();
+}
+
+function exportExcel(){
+  if(typeof XLSX==='undefined'){alert('Try again shortly.');return;}
+  const wb=XLSX.utils.book_new();
+  const rows=[['Organisation','Type','Bold Project','Tag','Impact','Status','Progress %','Deadline','Actions']];
+  for(const o of ORGS){
+    for(const p of o.projects){
+      rows.push([o.name,p.type,p.text,p.tag||'',p.impact||'',p.status,p.pct+'%',p.deadline||'',p.actions.map(a=>a.text).join(' | ')]);
+    }
+  }
+  const ws=XLSX.utils.aoa_to_sheet(rows);
+  ws['!cols']=[{wch:20},{wch:10},{wch:40},{wch:5},{wch:28},{wch:14},{wch:10},{wch:12},{wch:50}];
+  XLSX.utils.book_append_sheet(wb,ws,'All Projects');
+  for(const o of ORGS){
+    const r=[['Type','Bold Project','Tag','Impact','Status','Progress %','Deadline','Actions']];
+    for(const p of o.projects){
+      r.push([p.type,p.text,p.tag||'',p.impact||'',p.status,p.pct+'%',p.deadline||'',p.actions.map(a=>a.text).join(' | ')]);
+    }
+    const ws2=XLSX.utils.aoa_to_sheet(r);
+    ws2['!cols']=[{wch:10},{wch:40},{wch:5},{wch:28},{wch:14},{wch:10},{wch:12},{wch:50}];
+    XLSX.utils.book_append_sheet(wb,ws2,o.name.substring(0,31));
+  }
+  XLSX.writeFile(wb,'TBB_Bold_Projects.xlsx');
+}
+
+render();
+</script>
+</body></html>
