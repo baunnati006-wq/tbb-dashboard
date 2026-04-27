@@ -1,35 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>TBB Dashboard</title>
 
-<!-- saved from url=(0067)file:///C:/Users/Unnati%20Unlimited/Downloads/tbb_dashboard_v6.html -->
-<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><style>
-*{box-sizing:border-box;margin:0;padding:0}
-  
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- ✅ LIBRARIES (ONLY ONCE) -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
+
+<!-- ✅ SUPABASE + DATA LOGIC -->
 <script>
 const SUPABASE_URL = "https://avzedikzynemagvajyfd.supabase.co";
 const SUPABASE_KEY = "sb_publishable_bJX1lFc4TyrZ73tsHL_GVw_6lr20zAQ";
 
 const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-// SAVE
-async function saveDashboard(data) {
+
+// ===== SAVE =====
+window.saveDashboard = async function () {
   const { error } = await db
     .from('dashboard')
-    .upsert([{ id: "main", data: data, updated_at: new Date() }]);
+    .upsert([{
+      id: "main",
+      data: ORGS,
+      updated_at: new Date()
+    }]);
 
-  if (error) console.error(error);
-}
+  if (error) {
+    console.error("❌ SAVE ERROR:", error);
+  } else {
+    console.log("✅ Saved");
+  }
+};
 
-// LOAD
-async function loadDashboard() {
+
+// ===== LOAD =====
+window.loadDashboard = async function () {
   const { data, error } = await db
     .from('dashboard')
     .select('*')
     .eq('id', "main")
     .single();
 
+  if (error) {
+    console.error("❌ LOAD ERROR:", error);
+    return null;
+  }
+
   return data?.data || null;
+};
+
+
+// ===== INIT (AUTO LOAD) =====
+async function initApp() {
+  const saved = await loadDashboard();
+
+  if (saved && Array.isArray(saved)) {
+    ORGS = saved;
+    render(); // your existing function
+    console.log("✅ Data loaded into UI");
+  } else {
+    console.warn("⚠️ No saved data found");
+  }
 }
+
+window.addEventListener("load", initApp);
+
+
+// ===== TEST BUTTONS =====
+window.testSave = function () {
+  saveDashboard();
+};
+
+window.testLoad = async function () {
+  const data = await loadDashboard();
+  console.log("Loaded:", data);
+};
 </script>
 body{font-family:var(--font-sans)}
 .dash{padding:1.25rem 1rem}
@@ -1135,18 +1183,14 @@ function exportExcel(){
 }
 
 render();
-  function testSave() {
-  saveDashboard({
-    projects: [
-      { name: "Test Project", status: "Running", progress: "50%" }
-    ]
-  });
-}
+  window.testSave = function () {
+  saveDashboard(); // saves real ORGS
+};  
 
-async function testLoad() {
+window.testLoad = async function () {
   const data = await loadDashboard();
   console.log("Loaded:", data);
-}
+};
 </script>
   <button onclick="testSave()">Test Save</button>
 <button onclick="testLoad()">Test Load</button>
